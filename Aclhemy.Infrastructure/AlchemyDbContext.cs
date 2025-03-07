@@ -9,12 +9,14 @@ namespace Alchemy.Infrastructure
         public AlchemyDbContext(DbContextOptions<AlchemyDbContext> options) : base(options) { }
 
         public DbSet<AppointmentEntity> Appointments { get; set; }
+        public DbSet<ServiceEntity> Services { get; set; }
         //public DbSet<User> Users { get; set; }
         //public DbSet<Master> Masters { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceConfiguration());
         }
     }
 }

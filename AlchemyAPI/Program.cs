@@ -9,6 +9,8 @@ using Alchemy.Domain.Interfaces;
 using Alchemy.Application.Services;
 using Alchemy.Infrastructure.Repositories;
 using System;
+using Alchemy.Domain.Repositories;
+using Alchemy.Domain.Services;
 
 
 namespace AlchemyAPI
@@ -37,6 +39,9 @@ namespace AlchemyAPI
 
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
+            builder.Services.AddScoped<IServicesService, ServicesService>();
+            builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 
             var app = builder.Build();
 
