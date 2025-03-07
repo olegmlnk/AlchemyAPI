@@ -43,8 +43,6 @@ namespace Alchemy.Infrastructure.Repositories
                 .Where(a => a.Id == id)
                 .ExecuteUpdateAsync(x => x
                 .SetProperty(a => a.AppointmentDate, a => appointmentDate)
-                //.SetProperty(a => a.ClientId, a => clientId)
-                //.SetProperty(a => a.BarberId, a => barberId)
                 .SetProperty(a => a.Description, a => description)
                 );
 

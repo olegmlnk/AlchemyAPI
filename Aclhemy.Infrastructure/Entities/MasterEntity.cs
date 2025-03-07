@@ -1,6 +1,4 @@
-﻿using Alchemy.Domain.Models;
-
-namespace Alchemy.Infrastructure.Entities
+﻿namespace Alchemy.Infrastructure.Entities
 {
     public class MasterEntity
     {
@@ -8,6 +6,5 @@ namespace Alchemy.Infrastructure.Entities
         public string Name { get; set; } = string.Empty;
         public string Expeirence { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public List<Appointment> Appointments { get; set; } = [];
     }
 }

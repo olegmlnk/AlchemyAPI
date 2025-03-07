@@ -24,11 +24,9 @@ namespace Alchemy.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(m => m.Expeirence)
+                .HasMaxLength(Master.MAX_EXPEIRENCE_LENGTH)
                 .IsRequired();
 
-            //builder.HasMany(m => m.Appointments)
-            //    .WithOne(b => b.Master)
-            //    .HasForeignKey(b => b.MasterId);
         }
     }
 }

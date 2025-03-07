@@ -1,14 +1,9 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using Alchemy.Infrastructure;
 using Alchemy.Domain.Interfaces;
 using Alchemy.Application.Services;
 using Alchemy.Infrastructure.Repositories;
-using System;
 using Alchemy.Domain.Repositories;
 using Alchemy.Domain.Services;
 
@@ -42,6 +37,9 @@ namespace AlchemyAPI
 
             builder.Services.AddScoped<IServicesService, ServicesService>();
             builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+
+            builder.Services.AddScoped<IMasterService, MasterService>();
+            builder.Services.AddScoped<IMasterRepository, MasterRepository>();
 
             var app = builder.Build();
 

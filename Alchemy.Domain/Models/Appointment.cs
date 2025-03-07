@@ -7,19 +7,11 @@
         {
             Id = id;
             AppointmentDate = appointmentDate;
-            //ClientId = clientId;
-            //MasterId = masterId;
             Description = description;
-            //Client = client;
-            //Master = master;
         }
 
         public Guid Id { get; }
         public DateTime AppointmentDate { get; } = DateTime.Now;
-        //public Guid ClientId { get; }
-        //public User Client { get; }
-        //public Guid MasterId { get; }
-        //public Master Master { get; }
         public string Description { get; } = string.Empty;
 
         public static (Appointment Appointment, string Error) Create(Guid id, DateTime appointmentDate, string description)

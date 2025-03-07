@@ -10,13 +10,13 @@ namespace Alchemy.Infrastructure
 
         public DbSet<AppointmentEntity> Appointments { get; set; }
         public DbSet<ServiceEntity> Services { get; set; }
-        //public DbSet<User> Users { get; set; }
-        //public DbSet<Master> Masters { get; set; }
+        public DbSet<MasterEntity> Masters { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
+            modelBuilder.ApplyConfiguration(new MasterConfiguration());
         }
     }
 }
