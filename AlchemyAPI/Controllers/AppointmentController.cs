@@ -25,6 +25,14 @@ namespace AlchemyAPI.Controllers
             return Ok(response);
         }
 
+        [HttpGet("GetAvailableSlots/{masterId:guid")]
+        public async Task<ActionResult<List<MasterSchedule>>> GetAvailableSlots(Guid masterId)
+        {
+            var slots = await _service.GetAvailableSlots(masterId);
+
+            return Ok(slots);
+        }
+
         [HttpPost("Create")]
         public async Task<ActionResult> CreateAppointment([FromBody] AppointmentRequest request)
         {
@@ -35,12 +43,15 @@ namespace AlchemyAPI.Controllers
 
             if(!string.IsNullOrEmpty(error))
             {
-                return BadRequest(error);
+                return BadRequest("Chosen date is not available");
             }
 
             var appointmentId = await _service.CreateAppointment(appointment);
-
-            return Ok(appointmentId);
+            if (appointmentId == Guid.Empty)
+            {
+                return BadRequest("Chosen date is not available");
+            }
+            return Ok("Appointment booked successfully");
         }
 
         [HttpPut("Update{id:guid}")]

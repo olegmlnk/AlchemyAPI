@@ -9,5 +9,7 @@ namespace Alchemy.Domain.Interfaces
         Task<List<Appointment>> GetAppointment();
         Task<Guid> GetAppointmentById(Guid id);
         Task<Guid> UpdateAppointment(Guid id, DateTime appointmentDate, string description);
+        Task<List<MasterSchedule>> GetAvailableSlots(Guid masterId);
+        Task<bool> BookAppointment(Guid slotId, Guid clientId);
     }
 }

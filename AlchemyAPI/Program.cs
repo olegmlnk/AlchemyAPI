@@ -6,6 +6,7 @@ using Alchemy.Application.Services;
 using Alchemy.Infrastructure.Repositories;
 using Alchemy.Domain.Repositories;
 using Alchemy.Domain.Services;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace AlchemyAPI
@@ -30,7 +31,17 @@ namespace AlchemyAPI
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
-            option.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+            option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
+
+            //builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            //    .AddEntityFrameworkStores<AlchemyDbContext>()
+            //    .AddDefaultTokenProviders();
+
+            //builder.Services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+            //    options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
+            //});
 
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
