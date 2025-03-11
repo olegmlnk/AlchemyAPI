@@ -21,11 +21,12 @@ namespace Alchemy.Infrastructure.Repositories
                 .ToListAsync();
 
             var appointments = appointmentEntities
-                .Select(a => Appointment.Create(a.Id, a.AppointmentDate, a.Description).Appointment)
+                .Select(a => Appointment.Create(a.Id, a.AppointmentDate, a.Description, a.MasterId).Appointment)
                 .ToList();
 
             return appointments;
         }
+
 
         public async Task<Guid> GetAppointmentById(Guid id)
         {

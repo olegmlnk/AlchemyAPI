@@ -25,7 +25,7 @@ namespace AlchemyAPI.Controllers
             return Ok(response);
         }
 
-        [HttpGet("GetAvailableSlots/{masterId:guid")]
+        [HttpGet("GetAvailableSlots/{masterId:guid}")]
         public async Task<ActionResult<List<MasterSchedule>>> GetAvailableSlots(Guid masterId)
         {
             var slots = await _service.GetAvailableSlots(masterId);
@@ -39,7 +39,8 @@ namespace AlchemyAPI.Controllers
             var (appointment, error) = Appointment.Create(
                 Guid.NewGuid(),
                 request.AppointmentDate,
-                request.Description);
+                request.Description,
+                request.);
 
             if(!string.IsNullOrEmpty(error))
             {

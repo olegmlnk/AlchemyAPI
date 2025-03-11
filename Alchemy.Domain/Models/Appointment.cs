@@ -1,14 +1,18 @@
-﻿namespace Alchemy.Domain.Models
+﻿using Microsoft.Identity.Client;
+
+namespace Alchemy.Domain.Models
 {
     public class Appointment
     {
         public const int MAX_DESCRIPTION_LENGTH = 255;
-        private Appointment(Guid id, DateTime appointmentDate, string description, Guid masterId)
+        private Appointment(Guid id, DateTime appointmentDate, string description, Guid masterId , Guid serviceId, Guid userId)
         {
             Id = id;
             AppointmentDate = appointmentDate;
             Description = description;
             MasterId = masterId;
+            ServiceId = serviceId;
+            UserId = userId;
         }
 
         public Guid Id { get; }
@@ -16,8 +20,12 @@
         public string Description { get; } = string.Empty;
         public Guid MasterId { get; }
         public Master Master { get; }
+        public Guid ServiceId { get; }
+        public Service Service { get; }
+        public Guid UserId { get; }
+        public User User { get; }
 
-        public static (Appointment Appointment, string Error) Create(Guid id, DateTime appointmentDate, string description, Guid masterId)
+        public static (Appointment Appointment, string Error) Create(Guid id, DateTime appointmentDate, string description, Guid masterId, Guid serviceId, Guid userId)
         {
             var error = string.Empty;
 
@@ -31,7 +39,7 @@
                 return(null, "Appointment date cannot be in the past");
             }
 
-            var appointment = new Appointment(id, appointmentDate, description, masterId);
+            var appointment = new Appointment(id, appointmentDate, description, masterId, serviceId, userId);
 
             return (appointment, error);
         }

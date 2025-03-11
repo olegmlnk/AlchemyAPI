@@ -39,30 +39,14 @@ namespace Alchemy.Application.Services
             return await _appointmentRepository.DeleteAppointment(id);
         }
 
-        public async Task<List<MasterSchedule>> GetAvailableSlot(Guid masterId)
+        public async Task<List<MasterSchedule>> GetAvailableSlots(Guid masterId)
         {
             return await _masterScheduleRepository.GetAvailableSlots(masterId);
         }
 
         public async Task<bool> BookAppointment(Guid slotId, Guid clientId)
         {
-            var success = await _masterScheduleRepository.BookSlot(slotId);
-
-            if(!success)
-            {
-                return false;
-            }
-
-            var appointment = new Appointment
-            {
-                Id = Guid.NewGuid(),
-                MasterId = (await _scheduleRepository.GetAvailableSlots(slotId)).First().MasterId,
-                ClientId = clientId,
-                AppointmentDate = (await _scheduleRepository.GetAvailableSlots(slotId)).First().AvailableFrom
-            };
-
-            await _appointmentRepository.CreateAppointment(appointment);
-            return true;
+            return await _masterScheduleRepository.BookSlot(slotId);
         }
     }
 }
