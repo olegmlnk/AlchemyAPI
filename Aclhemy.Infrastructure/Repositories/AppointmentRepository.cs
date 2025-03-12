@@ -21,7 +21,7 @@ namespace Alchemy.Infrastructure.Repositories
                 .ToListAsync();
 
             var appointments = appointmentEntities
-                .Select(a => Appointment.Create(a.Id, a.AppointmentDate, a.Description, a.MasterId).Appointment)
+                .Select(a => Appointment.Create(a.Id, a.AppointmentDate, a.Description, a.MasterId, a.ServiceId, a.UserId).Appointment)
                 .ToList();
 
             return appointments;

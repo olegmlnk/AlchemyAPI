@@ -18,14 +18,24 @@ namespace Alchemy.Infrastructure.Repositories
         {
             var masterEntities = await _context.Masters
                 .AsNoTracking()
+                .Include(m => m.Appointments) // Додаємо Include, щоб підтягнути записи
                 .ToListAsync();
 
             var masters = masterEntities
-                .Select(m => Master.Create(m.Id, m.Name, m.Expeirence, m.Description).master)
+                .Select(m => Master.Create(
+                    m.Id,
+                    m.Name,
+                    m.Expeirence,
+                    m.Description,
+                    m.Appointments
+                        .Select(a => Appointment.Create(a.Id, a.AppointmentDate, a.Description, a.MasterId, a.ServiceId, a.UserId).Appointment)
+                        .ToList()
+                ).master)
                 .ToList();
 
             return masters;
         }
+
 
         public async Task<Guid> GetMasterById(Guid id)
         {

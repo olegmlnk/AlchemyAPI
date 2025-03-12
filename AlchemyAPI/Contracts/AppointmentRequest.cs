@@ -3,6 +3,9 @@
     public record AppointmentRequest
     (
         DateTime AppointmentDate,
-        string Description
+        string Description,
+        Guid MasterId,
+        Guid UserId,
+        Guid ServiceId
     );
 }

@@ -40,7 +40,9 @@ namespace AlchemyAPI.Controllers
                 Guid.NewGuid(),
                 request.AppointmentDate,
                 request.Description,
-                request.);
+                request.MasterId,
+                request.UserId,
+                request.ServiceId);
 
             if(!string.IsNullOrEmpty(error))
             {

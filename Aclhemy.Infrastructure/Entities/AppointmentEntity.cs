@@ -6,10 +6,12 @@ namespace Alchemy.Infrastructure.Entities
     {
         public Guid Id { get; set; }
         public DateTime AppointmentDate { get; set; } = DateTime.Now;
-        //public Guid ClientId { get; set; }
-        //public User? Client {  get; set; }
-        //public Guid MasterId { get; set; }
-        //public Master? Master { get; set; }
+        public Guid UserId { get; set; }
+        public User? User { get; set; }
+        public Guid ServiceId { get; set; }
+        public Service? Service { get; set; }
+        public Guid MasterId { get; set; }
+        public Master? Master { get; set; }
         public string Description { get; set; } = string.Empty;
     }
 }
