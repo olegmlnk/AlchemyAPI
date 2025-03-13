@@ -11,7 +11,7 @@ namespace Alchemy.Infrastructure.Entities
         public Guid ServiceId { get; set; }
         public Service? Service { get; set; }
         public Guid MasterId { get; set; }
-        public Master? Master { get; set; }
+        public MasterEntity? Master { get; set; }
         public string Description { get; set; } = string.Empty;
     }
 }

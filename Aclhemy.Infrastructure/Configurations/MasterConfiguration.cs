@@ -1,5 +1,5 @@
-﻿using Alchemy.Infrastructure.Entities;
-using Alchemy.Domain.Models;
+﻿using Alchemy.Domain.Models;
+using Alchemy.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,6 +26,12 @@ namespace Alchemy.Infrastructure.Configurations
             builder.Property(m => m.Expeirence)
                 .HasMaxLength(Master.MAX_EXPEIRENCE_LENGTH)
                 .IsRequired();
+
+            builder.HasMany(m => m.Appointments)
+      .WithOne(a => a.Master)
+      .HasForeignKey(a => a.MasterId)
+      .OnDelete(DeleteBehavior.Cascade);
+
 
         }
     }
