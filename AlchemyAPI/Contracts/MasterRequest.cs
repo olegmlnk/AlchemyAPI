@@ -6,7 +6,6 @@ namespace AlchemyAPI.Contracts
     (
         string Name,
         string Expeirence,
-        string Description,
-        List<Appointment> Appointments
+        string Description
     );
 }

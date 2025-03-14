@@ -21,7 +21,7 @@ namespace AlchemyAPI.Controllers
         {
             var appointments = await _service.GetAppointment();
 
-            var response = appointments.Select(a => new AppointmentResponse(a.Id, a.AppointmentDate, a.Description));
+            var response = appointments.Select(a => new AppointmentResponse(a.Id, a.AppointmentDate, a.Description, a.UserId, a.MasterId, a.ServiceId));
             return Ok(response);
         }
 

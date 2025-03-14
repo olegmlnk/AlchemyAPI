@@ -14,7 +14,6 @@ namespace Alchemy.Infrastructure.Configurations
             builder.Property(a => a.AppointmentDate)
                 .IsRequired();
 
-
             builder.Property(a => a.Description)
                 .HasMaxLength(Appointment.MAX_DESCRIPTION_LENGTH)
                 .IsRequired();
@@ -23,12 +22,20 @@ namespace Alchemy.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(a => a.UserId)
-                 .IsRequired();
+                .IsRequired();
 
-            builder.HasOne(b => b.User)
-                .WithMany()
-                .HasForeignKey(b => b.UserId)
+            builder.HasOne(a => a.User)
+                .WithMany(u => u.Appointments)
+                .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(a => a.ServiceId)
+                .IsRequired();
+
+            builder.HasOne(a => a.Service)
+                .WithMany()
+                .HasForeignKey(a => a.ServiceId)
+                .OnDelete(DeleteBehavior.Restrict); 
 
             builder.HasOne(a => a.Master)
                 .WithMany(m => m.Appointments)
@@ -38,6 +45,5 @@ namespace Alchemy.Infrastructure.Configurations
             builder.HasIndex(a => new { a.MasterId, a.AppointmentDate })
                 .IsUnique();
         }
-
     }
 }

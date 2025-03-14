@@ -6,9 +6,8 @@ namespace AlchemyAPI.Contracts
     (
         Guid Id,
         DateTime AppointmentDate,
-        //Guid ClientId,
-        //User? Client,
-        //Guid MasterId,
-        //Master? Master,
-        string Description);
+        string Description,
+        Guid UserId,
+        Guid MasterId,
+        Guid ServiceId);
 }

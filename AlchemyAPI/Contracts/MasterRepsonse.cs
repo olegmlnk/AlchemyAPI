@@ -1,4 +1,6 @@
-﻿namespace AlchemyAPI.Contracts
+﻿using Alchemy.Infrastructure.Entities;
+
+namespace AlchemyAPI.Contracts
 {
     public record MasterRepsonse
     (

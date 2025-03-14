@@ -34,7 +34,7 @@ namespace AlchemyAPI.Controllers
                 request.Name,
                 request.Expeirence,
                 request.Description,
-                request.Appointments);
+                new List<Appointment>());
 
             if (!string.IsNullOrEmpty(error))
             {
