@@ -60,7 +60,7 @@ namespace AlchemyAPI.Controllers
         [HttpPut("Update{id:guid}")]
         public async Task<ActionResult<Guid>> UpdateAppointment(Guid id, [FromBody] AppointmentRequest request)
         {
-            var appointmentId = await _service.UpdateAppointment(id, request.AppointmentDate, request.Description);
+            var appointmentId = await _service.UpdateAppointment(id, request.AppointmentDate, request.Description, request.MasterId, request.ServiceId, request.UserId);
 
             return Ok(appointmentId);
         }

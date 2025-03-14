@@ -31,7 +31,7 @@ namespace Alchemy.Infrastructure.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(a => a.Master)
-                .WithMany(m => m.Appointments.Cast<AppointmentEntity>())
+                .WithMany(m => m.Appointments)
                 .HasForeignKey(a => a.MasterId)
                 .OnDelete(DeleteBehavior.Cascade);
 

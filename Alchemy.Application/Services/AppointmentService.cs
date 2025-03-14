@@ -30,9 +30,9 @@ namespace Alchemy.Application.Services
             return await _appointmentRepository.CreateAppointment(appointment);
         }
 
-        public async Task<Guid> UpdateAppointment(Guid id, DateTime appointmentDate, string description)
+        public async Task<Guid> UpdateAppointment(Guid id, DateTime appointmentDate, string description, Guid masterId, Guid serviceId, Guid userId)
         {
-            return await _appointmentRepository.UpdateAppointment(id, appointmentDate, description);
+            return await _appointmentRepository.UpdateAppointment(id, appointmentDate, description, masterId, serviceId, userId);
         }
         public async Task<Guid> DeleteAppointment(Guid id)
         {

@@ -38,13 +38,15 @@ namespace Alchemy.Infrastructure.Repositories
             return appointment.Id;
         }
 
-        public async Task<Guid> UpdateAppointment(Guid id, DateTime appointmentDate, string description)
+        public async Task<Guid> UpdateAppointment(Guid id, DateTime appointmentDate, string description, Guid masterId, Guid serviceId, Guid userId)
         {
             await _context.Appointments
                 .Where(a => a.Id == id)
                 .ExecuteUpdateAsync(x => x
                 .SetProperty(a => a.AppointmentDate, a => appointmentDate)
                 .SetProperty(a => a.Description, a => description)
+                .SetProperty(a => a.MasterId, a => masterId)
+                .SetProperty(a => a.ServiceId, a => serviceId)
                 );
 
             return id;

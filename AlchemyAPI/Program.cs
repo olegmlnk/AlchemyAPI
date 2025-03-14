@@ -52,6 +52,8 @@ namespace AlchemyAPI
             builder.Services.AddScoped<IMasterService, MasterService>();
             builder.Services.AddScoped<IMasterRepository, MasterRepository>();
 
+            builder.Services.AddScoped<IMasterScheduleRepository,  MasterScheduleRepository>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

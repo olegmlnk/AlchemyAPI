@@ -1,7 +1,6 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Domain.Services;
 using AlchemyAPI.Contracts;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlchemyAPI.Controllers
@@ -34,7 +33,8 @@ namespace AlchemyAPI.Controllers
                 Guid.NewGuid(),
                 request.Name,
                 request.Expeirence,
-                request.Description);
+                request.Description,
+                request.Appointments);
 
             if (!string.IsNullOrEmpty(error))
             {
