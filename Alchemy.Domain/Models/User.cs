@@ -2,7 +2,7 @@
 {
     public class User
     {
-        public User(Guid id, string firstName, string lastName, string email)
+        public User(Guid id, string firstName, string lastName, string email, List<Appointment> Appointments)
         {
             Id = id;
             FirstName = firstName;
@@ -15,7 +15,7 @@
         public string FirstName { get; }
         public string LastName { get; }
         public string Email { get; }
-        public List<Appointment> Appointments { get; }  
+        public List<Appointment> Appointments { get; set; }  
 
         public string FullName => $"{FirstName} {LastName}";
     }

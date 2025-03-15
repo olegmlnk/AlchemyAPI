@@ -58,8 +58,9 @@ namespace Alchemy.Infrastructure.Repositories
             {
                 Id = appointment.Id,
                 AppointmentDate = appointment.AppointmentDate,
-                //ClientId = appointment.ClientId,
-                //BarberId = appointment.BarberId,
+                UserId = appointment.UserId,
+                MasterId = appointment.MasterId,
+                ServiceId = appointment.ServiceId,
                 Description = appointment.Description
             };
 
