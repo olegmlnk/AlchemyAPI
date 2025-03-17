@@ -1,5 +1,4 @@
 ﻿using Alchemy.Domain.Models;
-
 namespace Alchemy.Infrastructure.Entities
 {
     public class AppointmentEntity

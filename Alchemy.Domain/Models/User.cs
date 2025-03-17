@@ -1,8 +1,10 @@
-﻿namespace Alchemy.Domain.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Alchemy.Domain.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        public User(Guid id, string firstName, string lastName, string email, List<Appointment> Appointments)
+        public User(Guid id, string firstName, string lastName, string email, ICollection<Appointment> Appointments)
         {
             Id = id;
             FirstName = firstName;
@@ -15,7 +17,7 @@
         public string FirstName { get; }
         public string LastName { get; }
         public string Email { get; }
-        public List<Appointment> Appointments { get; set; }  
+        public ICollection<Appointment> Appointments { get; set; }  
 
         public string FullName => $"{FirstName} {LastName}";
     }
