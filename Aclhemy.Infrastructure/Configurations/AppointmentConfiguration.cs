@@ -24,10 +24,10 @@ namespace Alchemy.Infrastructure.Configurations
             builder.Property(a => a.UserId)
                 .IsRequired();
 
-            builder.HasOne(a => a.User)
-                .WithMany(u => u.Appointments)
-                .HasForeignKey(a => a.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne(a => a.User)
+            //    .WithMany(u => u.Appointments)
+            //    .HasForeignKey(a => a.UserId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(a => a.ServiceId)
                 .IsRequired();

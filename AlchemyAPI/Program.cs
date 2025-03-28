@@ -33,15 +33,15 @@ namespace AlchemyAPI
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
 
-            //builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<AlchemyDbContext>()
-            //    .AddDefaultTokenProviders();
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AlchemyDbContext>()
+                .AddDefaultTokenProviders();
 
-            //builder.Services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-            //    options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
-            //});
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
+            });
 
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
