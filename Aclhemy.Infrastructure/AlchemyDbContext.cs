@@ -12,7 +12,7 @@ namespace Alchemy.Infrastructure
         public DbSet<AppointmentEntity> Appointments { get; set; }
         public DbSet<ServiceEntity> Services { get; set; }
         public DbSet<MasterEntity> Masters { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
         public DbSet<MasterSchedule> MasterSchedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

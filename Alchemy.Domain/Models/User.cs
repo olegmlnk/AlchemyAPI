@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.Diagnostics.Contracts;
 
 namespace Alchemy.Domain.Models
 {
     public class User : IdentityUser
     {
-        public User(Guid id, string username, string passwordHash, string email, ICollection<Appointment> Appointments)
+        public User(Guid id, string username, string passwordHash, string email, List<Appointment> Appointments)
         {
             Id = id;
             Username = username;
@@ -18,7 +17,7 @@ namespace Alchemy.Domain.Models
         public string Username { get; private set; }
         public string PasswordHash { get; private set; }
         public string Email { get; private set; }
-        public ICollection<Appointment> Appointments { get; set; }  
+        public List<Appointment> Appointments { get; set; }  
 
 
         public static (User User, string Error) Create(Guid id, string username, string passwordHash, string email, List<Appointment> appointments)

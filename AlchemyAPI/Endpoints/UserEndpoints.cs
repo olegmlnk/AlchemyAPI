@@ -22,8 +22,10 @@ namespace AlchemyAPI.Endpoints
             return Results.Ok();
         }
 
-        private static async Task<IResult> Login(UserService userService)
+        private static async Task<IResult> Login(LoginUserRequest loginUserRequest, UserService userService)
         {
+            var token = await userService.Login(loginUserRequest.Email, loginUserRequest.Password);
+
             return Results.Ok();
         }
     }

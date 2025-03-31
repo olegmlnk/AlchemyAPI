@@ -1,9 +1,12 @@
-﻿namespace AlchemyAPI.Contracts
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AlchemyAPI.Contracts
 {
     public record LoginUserRequest
     (
-        string Username,
+        [Required]
         string Email,
+        [Required]
         string Password
     );
 }

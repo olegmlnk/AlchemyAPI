@@ -26,5 +26,17 @@ namespace Alchemy.Application.Services
 
             await _userRepository.AddUser(user);
         }
+
+        public async Task<string> Login(string email, string password)
+        {
+            var user = await _userRepository.GetUserByEmail(email);
+
+            var result = _passwordHasher.Verify(password, user.PasswordHash);
+
+            if(!result)
+                throw new Exception("Invalid password");
+
+            return result; 
+        }
     }
 }

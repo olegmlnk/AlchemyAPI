@@ -1,24 +1,29 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
+using Alchemy.Infrastructure.Entities;
+using Alchemy.Infrastructure.Mappings;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly AlchemyDbContext _alchemyDbContext;
-        public UserRepository(AlchemyDbContext alchemyDbContext)
+        private readonly IMapper _mapper;
+        public UserRepository(AlchemyDbContext alchemyDbContext, IMapper mapper)
         {
             alchemyDbContext = _alchemyDbContext;
+            mapper = _mapper;
         }
 
-        public async Task<Guid> GetUser(Guid id)
+        public async Task<User> GetUserByEmail(string email)
         {
-            var user = await _alchemyDbContext.Users.FindAsync(id);
+            var userEntity = await _alchemyDbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Email == email) ?? throw new Exception("User not found");
 
-            if (user == null)
-                throw new KeyNotFoundException("User not found");
-
-            return user.Id;
+            return _mapper.Map<User>(userEntity);
         }
 
         public async Task<Guid> DeleteUser(Guid id)
@@ -35,14 +40,19 @@ namespace Alchemy.Infrastructure.Repositories
         }
 
 
-        public async Task<Guid> AddUser(User user)
+        public async Task AddUser(User user)
         {
-            if(user == null)
-                throw new ArgumentNullException("User cannot be null");
+            var userEntity = new UserEntity
+            {
+                Id = user.Id,
+                Username = user.Username,
+                PasswordHash = user.PasswordHash,
+                Email = user.Email,
+                Appointments = new List<Appointment>()
+            };
 
-            await _alchemyDbContext.Users.AddAsync(user);
+            await _alchemyDbContext.Users.AddAsync(userEntity);
             await _alchemyDbContext.SaveChangesAsync();
-            return user.Id;
         }
 
     }
