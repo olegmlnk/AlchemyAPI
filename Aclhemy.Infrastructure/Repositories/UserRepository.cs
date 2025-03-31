@@ -1,4 +1,5 @@
 ﻿using Alchemy.Domain.Interfaces;
+using Alchemy.Domain.Models;
 
 namespace Alchemy.Infrastructure.Repositories
 {
@@ -33,6 +34,16 @@ namespace Alchemy.Infrastructure.Repositories
             return user.Id;
         }
 
+
+        public async Task<Guid> AddUser(User user)
+        {
+            if(user == null)
+                throw new ArgumentNullException("User cannot be null");
+
+            await _alchemyDbContext.Users.AddAsync(user);
+            await _alchemyDbContext.SaveChangesAsync();
+            return user.Id;
+        }
 
     }
 }
