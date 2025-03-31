@@ -10,6 +10,8 @@ namespace AlchemyAPI.Endpoints
         {
             app.MapPost("register", Register);
             app.MapPost("login", Login);
+
+            return app;
         }
 
         private static async Task<IResult> Register(

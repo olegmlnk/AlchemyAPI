@@ -8,10 +8,12 @@ namespace Alchemy.Application.Services
     {
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUserRepository _userRepository;
-        public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository)
+        private readonly IJwtProvider _jwtProvider;
+        public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository, IJwtProvider jwtProvider)
         {
             _passwordHasher = passwordHasher;
             _userRepository = userRepository;
+            _jwtProvider = jwtProvider;
         }
 
         public async Task Register(string username, string email, string password)
@@ -34,9 +36,9 @@ namespace Alchemy.Application.Services
             var result = _passwordHasher.Verify(password, user.PasswordHash);
 
             if(!result)
-                throw new Exception("Invalid password");
+                throw new Exception("Failed to login");
 
-            return result; 
+            return _jwtProvider.GenerateToken(user);
         }
     }
-}
+} 

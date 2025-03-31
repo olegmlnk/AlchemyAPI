@@ -1,4 +1,5 @@
-﻿using Alchemy.Domain.Models;
+﻿using Alchemy.Domain.Interfaces;
+using Alchemy.Domain.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Alchemy.Infrastructure
 {
-    public class JwtProvider
+    public class JwtProvider : IJwtProvider
     {
         private readonly JwtOptions _options;
 
