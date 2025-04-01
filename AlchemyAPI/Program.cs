@@ -85,7 +85,7 @@ namespace AlchemyAPI
             builder.Services.AddScoped<IMasterScheduleRepository,  MasterScheduleRepository>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 

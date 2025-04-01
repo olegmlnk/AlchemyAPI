@@ -13,8 +13,8 @@ namespace Alchemy.Infrastructure.Repositories
         private readonly IMapper _mapper;
         public UserRepository(AlchemyDbContext alchemyDbContext, IMapper mapper)
         {
-            alchemyDbContext = _alchemyDbContext;
-            mapper = _mapper;
+            _alchemyDbContext = alchemyDbContext;
+            _mapper = mapper;
         }
 
         public async Task<User> GetUserByEmail(string email)

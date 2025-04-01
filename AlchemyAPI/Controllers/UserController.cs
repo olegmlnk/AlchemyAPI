@@ -1,4 +1,4 @@
-﻿using Alchemy.Application.Services;
+﻿using Alchemy.Domain.Interfaces;
 using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,9 +8,9 @@ namespace AlchemyAPI.Controllers
     [Route("api/user")]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UserController(UserService userService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }
@@ -29,6 +29,5 @@ namespace AlchemyAPI.Controllers
             return Ok("User has been logged in");
         }
 
-        //need to add CreateRole and AssignRoleToUser methods
     }
 }

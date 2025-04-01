@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Alchemy.Application.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUserRepository _userRepository;
@@ -19,19 +19,19 @@ namespace Alchemy.Application.Services
             _logger = logger;
         }
 
-        //public async Task Register(string username, string email, string password)
-        //{
-        //    var hashedPassword = _passwordHasher.GenerateHash(password);
+        public async Task Register(string username, string email, string password)
+        {
+            var hashedPassword = _passwordHasher.GenerateHash(password);
 
-        //    var (user, error) = User.Create(Guid.NewGuid(), username, hashedPassword, email, new List<Appointment>());
-        //    if (error != null)
-        //    {
-        //        _logger.LogError("User creation failed: {Error}", error);
-        //        throw new Exception(error);
-        //    }
+            var (user, error) = User.Create(Guid.NewGuid(), username, hashedPassword, email, new List<Appointment>());
+            if (error != null)
+            {
+                _logger.LogError("User creation failed: {Error}", error);
+                throw new Exception(error);
+            }
 
-        //    await _userRepository.AddUser(user);
-        //}
+            await _userRepository.AddUser(user);
+        }
 
 
         public async Task<string> Login(string email, string password)
@@ -40,7 +40,7 @@ namespace Alchemy.Application.Services
 
             var result = _passwordHasher.Verify(password, user.PasswordHash);
 
-            if(!result)
+            if (!result)
                 throw new Exception("Failed to login");
 
             return _jwtProvider.GenerateToken(user);

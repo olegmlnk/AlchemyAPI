@@ -24,7 +24,7 @@ namespace Alchemy.Domain.Models
         public Guid ServiceId { get; private set; }
         public Service Service { get; private set; }
         public Guid UserId { get; private set; }
-        public User User { get; private set; }
+        public User User { get; set; }
 
         public static (Appointment Appointment, string Error) Create(Guid id, DateTime appointmentDate, string description, Guid masterId, Guid serviceId, Guid userId)
         {

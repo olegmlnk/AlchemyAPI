@@ -29,7 +29,7 @@ namespace Alchemy.Domain.Models
                 error = "First name and last name cannot be empty";
             }
             var user = new User(id, username, passwordHash, email, new List<Appointment>());
-            return (user, error);
+            return (user, null);
         }
     }
 }
