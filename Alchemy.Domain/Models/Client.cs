@@ -3,6 +3,7 @@
     public class Client
     {
         public const int MAX_FULLNAME_LENGTH = 55;
+        public Client() { }
         private Client(Guid id, string fullName, string email, string passwordHash, string role)
         {
             Id = id;
@@ -12,11 +13,11 @@
             Role = role;
         }
 
-        public Guid Id { get; set; }
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
-        public string Role {  get; set; } = string.Empty;
+        public Guid Id { get; private set; }
+        public string FullName { get; private set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
+        public string PasswordHash { get; private set; } = string.Empty;
+        public string Role {  get; private set; } = string.Empty;
 
         public static (Client Client, string Error) Create(Guid id, string fullName, string email, string passwordHash, string role)
         {

@@ -4,6 +4,8 @@
     {
         public const int MAX_TITLE_LENGTH = 50;
         public const int MAX_DESCRIPTION_LENGTH = 255;
+
+        private Service() { }
         private Service(Guid id, string title, string description, decimal price, int duration)
         {
             Id = id;
@@ -13,11 +15,11 @@
             Duration = duration;
         }
 
-        public Guid Id { get; }
-        public string Title { get; } = string.Empty;
-        public string Description { get; } = string.Empty;
-        public decimal Price { get; }
-        public int Duration { get; }
+        public Guid Id { get; private set; }
+        public string Title { get; private set; } = string.Empty;
+        public string Description { get; private set; } = string.Empty;
+        public decimal Price { get; private set; }
+        public int Duration { get; private set; }
 
         public static (Service Service, string error) Create(Guid id, string title, string description, decimal price, int duration)
         {

@@ -4,6 +4,8 @@
     {
         public const int MAX_DESCRIPTION_LENGTH = 100;
         public const int MAX_EXPEIRENCE_LENGTH = 25;
+
+        private Master() { }
         private Master(Guid id, string name, string expeirence, string description, List<Appointment> appointments)
         {
             Id = id;
@@ -13,11 +15,11 @@
             Appointments = appointments;
         }
 
-        public Guid Id { get; }
-        public string Name { get; set; } = string.Empty;
-        public string Expeirence { get; } = string.Empty;
-        public string Description { get; } = string.Empty;
-        public List<Appointment> Appointments { get; }
+        public Guid Id { get; private set; }
+        public string Name { get; private set; } = string.Empty;
+        public string Expeirence { get; private set; } = string.Empty;
+        public string Description { get; private set; } = string.Empty;
+        public List<Appointment> Appointments { get; private set; }
 
         public static (Master master, string error) Create(Guid id, string name, string expeirence, string description, List<Appointment> appointments)
         {

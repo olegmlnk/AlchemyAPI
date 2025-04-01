@@ -1,10 +1,11 @@
-﻿using Microsoft.Identity.Client;
-
+﻿
 namespace Alchemy.Domain.Models
 {
     public class Appointment
     {
         public const int MAX_DESCRIPTION_LENGTH = 255;
+
+        private Appointment() { }
         private Appointment(Guid id, DateTime appointmentDate, string description, Guid masterId , Guid serviceId, Guid userId)
         {
             Id = id;
@@ -15,15 +16,15 @@ namespace Alchemy.Domain.Models
             UserId = userId;
         }
 
-        public Guid Id { get; }
-        public DateTime AppointmentDate { get; } = DateTime.Now;
-        public string Description { get; } = string.Empty;
-        public Guid MasterId { get; }
-        public Master Master { get; }
-        public Guid ServiceId { get; }
-        public Service Service { get; }
-        public Guid UserId { get; }
-        public User User { get; }
+        public Guid Id { get; private set; }
+        public DateTime AppointmentDate { get; private set; } = DateTime.UtcNow;
+        public string Description { get; private set; } = string.Empty;
+        public Guid MasterId { get; private set; }
+        public Master Master { get; private set; }
+        public Guid ServiceId { get; private set; }
+        public Service Service { get; private set; }
+        public Guid UserId { get; private set; }
+        public User User { get; private set; }
 
         public static (Appointment Appointment, string Error) Create(Guid id, DateTime appointmentDate, string description, Guid masterId, Guid serviceId, Guid userId)
         {

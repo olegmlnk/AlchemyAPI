@@ -4,6 +4,7 @@ namespace Alchemy.Domain.Models
 {
     public class User : IdentityUser
     {
+        public User(){}
         public User(Guid id, string username, string passwordHash, string email, List<Appointment> Appointments)
         {
             Id = id;
@@ -13,11 +14,11 @@ namespace Alchemy.Domain.Models
             Appointments = new List<Appointment>();
         }
 
-        public Guid Id { get; set; }
+        public Guid Id { get; private set; }
         public string Username { get; private set; }
         public string PasswordHash { get; private set; }
         public string Email { get; private set; }
-        public List<Appointment> Appointments { get; set; }  
+        public List<Appointment> Appointments { get; private set; }  
 
 
         public static (User User, string Error) Create(Guid id, string username, string passwordHash, string email, List<Appointment> appointments)

@@ -1,6 +1,7 @@
 ﻿using Alchemy.Domain;
 using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Alchemy.Application.Services
 {
@@ -9,25 +10,29 @@ namespace Alchemy.Application.Services
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUserRepository _userRepository;
         private readonly IJwtProvider _jwtProvider;
-        public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository, IJwtProvider jwtProvider)
+        private readonly ILogger<UserService> _logger;
+        public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository, IJwtProvider jwtProvider, ILogger<UserService> logger)
         {
             _passwordHasher = passwordHasher;
             _userRepository = userRepository;
             _jwtProvider = jwtProvider;
+            _logger = logger;
         }
 
-        public async Task Register(string username, string email, string password)
-        {
-            var hashedPassword = _passwordHasher.GenerateHash(password);
+        //public async Task Register(string username, string email, string password)
+        //{
+        //    var hashedPassword = _passwordHasher.GenerateHash(password);
 
-            var (user, error) = User.Create(Guid.NewGuid(), username, hashedPassword, email, new List<Appointment>());
-            if (error != null)
-            {
-                throw new Exception(error);
-            }
+        //    var (user, error) = User.Create(Guid.NewGuid(), username, hashedPassword, email, new List<Appointment>());
+        //    if (error != null)
+        //    {
+        //        _logger.LogError("User creation failed: {Error}", error);
+        //        throw new Exception(error);
+        //    }
 
-            await _userRepository.AddUser(user);
-        }
+        //    await _userRepository.AddUser(user);
+        //}
+
 
         public async Task<string> Login(string email, string password)
         {

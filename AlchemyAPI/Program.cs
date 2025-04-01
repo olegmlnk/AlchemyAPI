@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Alchemy.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Alchemy.Domain;
 
 
 namespace AlchemyAPI
@@ -83,6 +83,11 @@ namespace AlchemyAPI
             builder.Services.AddScoped<IMasterRepository, MasterRepository>();
 
             builder.Services.AddScoped<IMasterScheduleRepository,  MasterScheduleRepository>();
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             var app = builder.Build();
 
