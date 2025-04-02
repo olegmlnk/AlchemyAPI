@@ -18,7 +18,7 @@ namespace Alchemy.Infrastructure.Repositories
         {
             var masterEntities = await _context.Masters
                 .AsNoTracking()
-                .Include(m => m.Appointments) // Додаємо Include, щоб підтягнути записи
+                .Include(m => m.Appointments) 
                 .ToListAsync();
 
             var masters = masterEntities

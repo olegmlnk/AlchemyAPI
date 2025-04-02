@@ -1,5 +1,7 @@
 ﻿using Alchemy.Domain.Interfaces;
+using Alchemy.Domain.Models;
 using AlchemyAPI.Contracts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlchemyAPI.Controllers
@@ -9,10 +11,14 @@ namespace AlchemyAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly UserManager<User> _userManager;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
         {
             _userService = userService;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpPost("register")]
@@ -29,5 +35,16 @@ namespace AlchemyAPI.Controllers
             return Ok("User has been logged in");
         }
 
+        [HttpPost("add-role")]
+        public async Task<IActionResult> AddRole([FromBody] string role)
+        {
+            return Ok();
+        }
+
+        [HttpPost("assign-role")]
+        public async Task<IActionResult> AssignRole([FromBody] string role)
+        {
+            return Ok();
+        }
     }
 }

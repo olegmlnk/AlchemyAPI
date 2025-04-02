@@ -1,13 +1,18 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Infrastructure.Configurations;
 using Alchemy.Infrastructure.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure
 {
-    public class AlchemyDbContext : DbContext
+    public class AlchemyDbContext : IdentityDbContext<UserEntity, IdentityRole<Guid>, Guid>
     {
-        public AlchemyDbContext(DbContextOptions<AlchemyDbContext> options) : base(options) { }
+        public AlchemyDbContext(DbContextOptions<AlchemyDbContext> options) : base(options) 
+        {
+            
+        }
 
         public DbSet<AppointmentEntity> Appointments { get; set; }
         public DbSet<ServiceEntity> Services { get; set; }
@@ -17,6 +22,7 @@ namespace Alchemy.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
             modelBuilder.ApplyConfiguration(new MasterConfiguration());

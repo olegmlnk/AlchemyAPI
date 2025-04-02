@@ -2,33 +2,38 @@
 
 namespace Alchemy.Domain.Models
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<Guid>
     {
-        public User(){}
-        public User(Guid id, string username, string passwordHash, string email, List<Appointment> Appointments)
+        public User() { }
+
+        public User(string username, string passwordHash, string email, List<Appointment> appointments)
         {
-            Id = id;
-            Username = username;
+            UserName = username; 
             PasswordHash = passwordHash;
             Email = email;
-            Appointments = new List<Appointment>();
+            Appointments = appointments ?? new List<Appointment>(); 
         }
 
-        public Guid Id { get; private set; }
-        public string Username { get; private set; }
-        public string PasswordHash { get; private set; }
-        public string Email { get; private set; }
-        public List<Appointment> Appointments { get; private set; }  
+        public List<Appointment> Appointments { get; private set; }
 
-
-        public static (User User, string Error) Create(Guid id, string username, string passwordHash, string email, List<Appointment> appointments)
+        public static (User User, string Error) Create(string username, string passwordHash, string email, List<Appointment> appointments)
         {
-            var error = string.Empty;
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(username))
+            if (string.IsNullOrWhiteSpace(username))
             {
-                error = "First name and last name cannot be empty";
+                return (null, "Username cannot be empty");
             }
-            var user = new User(id, username, passwordHash, email, new List<Appointment>());
+
+            if (string.IsNullOrWhiteSpace(passwordHash))
+            {
+                return (null, "Password cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return (null, "Email cannot be empty");
+            }
+
+            var user = new User(username, passwordHash, email, appointments);
             return (user, null);
         }
     }

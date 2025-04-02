@@ -23,7 +23,7 @@ namespace Alchemy.Application.Services
         {
             var hashedPassword = _passwordHasher.GenerateHash(password);
 
-            var (user, error) = User.Create(Guid.NewGuid(), username, hashedPassword, email, new List<Appointment>());
+            var (user, error) = User.Create(username, hashedPassword, email, new List<Appointment>());
             if (error != null)
             {
                 _logger.LogError("User creation failed: {Error}", error);

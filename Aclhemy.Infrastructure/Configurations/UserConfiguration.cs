@@ -11,7 +11,7 @@ namespace Alchemy.Infrastructure.Configurations
         {
             builder.HasKey(u => u.Id);
 
-            builder.Property(u => u.Username)
+            builder.Property(u => u.UserName)
                 .HasMaxLength(25)
                 .IsRequired();
 

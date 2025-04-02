@@ -11,6 +11,7 @@ using Alchemy.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Alchemy.Domain;
+using Alchemy.Domain.Models;
 
 
 namespace AlchemyAPI
@@ -39,7 +40,7 @@ namespace AlchemyAPI
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequiredLength = 8;
                 options.Password.RequireNonAlphanumeric = false;
@@ -47,8 +48,9 @@ namespace AlchemyAPI
                 options.Password.RequireLowercase = true;
                 options.Password.RequireDigit = true;
             })
-                .AddEntityFrameworkStores<AlchemyDbContext>()
-                .AddDefaultTokenProviders();
+     .AddEntityFrameworkStores<AlchemyDbContext>()
+     .AddDefaultTokenProviders();
+
 
             builder.Services.AddAuthentication(options =>
             {

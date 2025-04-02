@@ -44,11 +44,18 @@ namespace Alchemy.Infrastructure.Repositories
         {
             var userEntity = new UserEntity
             {
-                Id = user.Id,
-                Username = user.Username,
+                UserName = user.UserName,
                 PasswordHash = user.PasswordHash,
                 Email = user.Email,
-                Appointments = new List<Appointment>()
+                Appointments = user.Appointments.Select(a => new AppointmentEntity
+                {
+                    Id = a.Id,
+                    AppointmentDate = a.AppointmentDate,
+                    Description = a.Description,
+                    UserId = a.UserId,
+                    ServiceId = a.ServiceId,
+                    MasterId = a.MasterId
+                }).ToList()
             };
 
             await _alchemyDbContext.Users.AddAsync(userEntity);

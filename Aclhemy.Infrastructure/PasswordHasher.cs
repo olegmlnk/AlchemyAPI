@@ -1,5 +1,4 @@
 ﻿using Alchemy.Domain;
-using System.Security.Cryptography;
 
 namespace Alchemy.Infrastructure
 {
