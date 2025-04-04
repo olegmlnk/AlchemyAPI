@@ -4,10 +4,10 @@ namespace Alchemy.Domain.Repositories
 {
     public interface IServiceRepository
     {
-        Task<Guid> CreateService(Service service);
-        Task<Guid> DeleteService(Guid id);
+        Task<long> CreateService(Service service);
+        Task<long> DeleteService(long id);
         Task<List<Service>> GetServices();
-        Task<Guid> GetServiceById(Guid id);
-        Task<Guid> UpdateService(Guid id, string title, string description, decimal price, int duration);
+        Task<long> GetServiceById(long id);
+        Task<long> UpdateService(long id, string title, string description, decimal price, int duration);
     }
 }

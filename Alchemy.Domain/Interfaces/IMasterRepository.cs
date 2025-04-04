@@ -4,10 +4,10 @@ namespace Alchemy.Domain.Repositories
 {
     public interface IMasterRepository
     {
-        Task<Guid> CreateMaster(Master master);
-        Task<Guid> DeleteMaster(Guid id);
-        Task<Guid> GetMasterById(Guid id);
+        Task<long> CreateMaster(Master master);
+        Task<long> DeleteMaster(long id);
+        Task<long> GetMasterById(long id);
         Task<List<Master>> GetMasters();
-        Task<Guid> UpdateMaster(Guid id, string name, string expeirence, string description);
+        Task<long> UpdateMaster(long id, string name, string expeirence, string description);
     }
 }

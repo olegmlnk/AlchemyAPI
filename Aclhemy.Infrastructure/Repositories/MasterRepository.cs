@@ -37,7 +37,7 @@ namespace Alchemy.Infrastructure.Repositories
         }
 
 
-        public async Task<Guid> GetMasterById(Guid id)
+        public async Task<long> GetMasterById(long id)
         {
             var master = await _context.Masters.FindAsync(id);
             if (master == null)
@@ -45,7 +45,7 @@ namespace Alchemy.Infrastructure.Repositories
             return master.Id;
         }
 
-        public async Task<Guid> CreateMaster(Master master)
+        public async Task<long> CreateMaster(Master master)
         {
             var masterEntity = new MasterEntity
             {
@@ -61,7 +61,7 @@ namespace Alchemy.Infrastructure.Repositories
             return master.Id;
         }
 
-        public async Task<Guid> UpdateMaster(Guid id, string name, string expeirence, string description)
+        public async Task<long> UpdateMaster(long id, string name, string expeirence, string description)
         {
             await _context.Masters.Where(m => m.Id == id)
                 .ExecuteUpdateAsync(x => x
@@ -73,7 +73,7 @@ namespace Alchemy.Infrastructure.Repositories
             return id;
         }
 
-        public async Task<Guid> DeleteMaster(Guid id)
+        public async Task<long> DeleteMaster(long id)
         {
             var master = await _context.Masters.FindAsync(id);
 

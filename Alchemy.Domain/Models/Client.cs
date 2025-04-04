@@ -4,7 +4,7 @@
     {
         public const int MAX_FULLNAME_LENGTH = 55;
         public Client() { }
-        private Client(Guid id, string fullName, string email, string passwordHash, string role)
+        private Client(long id, string fullName, string email, string passwordHash, string role)
         {
             Id = id;
             FullName = fullName;
@@ -13,13 +13,13 @@
             Role = role;
         }
 
-        public Guid Id { get; private set; }
+        public long Id { get; private set; }
         public string FullName { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
         public string PasswordHash { get; private set; } = string.Empty;
         public string Role {  get; private set; } = string.Empty;
 
-        public static (Client Client, string Error) Create(Guid id, string fullName, string email, string passwordHash, string role)
+        public static (Client Client, string Error) Create(long id, string fullName, string email, string passwordHash, string role)
         {
             var error = string.Empty;
 

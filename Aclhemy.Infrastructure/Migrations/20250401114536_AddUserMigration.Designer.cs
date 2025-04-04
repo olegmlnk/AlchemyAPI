@@ -27,7 +27,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Domain.Models.Appointment", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -38,16 +38,16 @@ namespace Alchemy.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("MasterId")
+                    b.Property<long>("MasterId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ServiceId")
+                    b.Property<long>("ServiceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<long>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId1")
+                    b.Property<long>("UserId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -65,7 +65,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Domain.Models.Master", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -88,7 +88,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Domain.Models.MasterSchedule", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -101,7 +101,7 @@ namespace Alchemy.Infrastructure.Migrations
                     b.Property<bool>("IsBooked")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("MasterId")
+                    b.Property<long>("MasterId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -113,7 +113,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Domain.Models.Service", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -138,7 +138,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Domain.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -197,7 +197,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Infrastructure.Entities.AppointmentEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -209,13 +209,13 @@ namespace Alchemy.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid>("MasterId")
+                    b.Property<long>("MasterId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ServiceId")
+                    b.Property<long>("ServiceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<long>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -232,7 +232,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Infrastructure.Entities.MasterEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -258,7 +258,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Infrastructure.Entities.ServiceEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -285,7 +285,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Infrastructure.Entities.UserEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 

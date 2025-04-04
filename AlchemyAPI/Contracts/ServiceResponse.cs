@@ -2,7 +2,7 @@
 {
     public record ServiceResponse
     (
-        Guid Id,
+        long Id,
         string Title,
         string Description,
         decimal Price,

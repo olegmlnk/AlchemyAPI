@@ -28,7 +28,7 @@ namespace Alchemy.Infrastructure.Repositories
         }
 
 
-        public async Task<Guid> GetAppointmentById(Guid id)
+        public async Task<long> GetAppointmentById(long id)
         {
             var appointment = await _context.Appointments.FindAsync(id);
 
@@ -38,7 +38,7 @@ namespace Alchemy.Infrastructure.Repositories
             return appointment.Id;
         }
 
-        public async Task<Guid> UpdateAppointment(Guid id, DateTime appointmentDate, string description, Guid masterId, Guid serviceId, Guid userId)
+        public async Task<long> UpdateAppointment(long id, DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
         {
             await _context.Appointments
                 .Where(a => a.Id == id)
@@ -52,7 +52,7 @@ namespace Alchemy.Infrastructure.Repositories
             return id;
         }
 
-        public async Task<Guid> CreateAppointment(Appointment appointment)
+        public async Task<long> CreateAppointment(Appointment appointment)
         {
             var appointmentEntity = new AppointmentEntity
             {
@@ -70,7 +70,7 @@ namespace Alchemy.Infrastructure.Repositories
             return appointment.Id;
         }
 
-        public async Task<Guid> DeleteAppointment(Guid id)
+        public async Task<long> DeleteAppointment(long id)
         {
             await _context.Appointments
                 .Where (a => a.Id == id)

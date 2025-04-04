@@ -18,22 +18,22 @@ namespace Alchemy.Application.Services
             return await _serviceRepository.GetServices();
         }
 
-        public async Task<Guid> GetServiceById(Guid id)
+        public async Task<long> GetServiceById(long id)
         {
             return await _serviceRepository.GetServiceById(id);
         }
 
-        public async Task<Guid> CreateService(Service service)
+        public async Task<long> CreateService(Service service)
         {
             return await _serviceRepository.CreateService(service);
         }
 
-        public async Task<Guid> UpdateService(Guid id, string title, string description, decimal price, int duration)
+        public async Task<long> UpdateService(long id, string title, string description, decimal price, int duration)
         {
             return await _serviceRepository.UpdateService(id, title, description, price, duration);
         }
 
-        public async Task<Guid> DeleteService(Guid id)
+        public async Task<long> DeleteService(long id)
         {
             return await _serviceRepository.DeleteService(id);
         }

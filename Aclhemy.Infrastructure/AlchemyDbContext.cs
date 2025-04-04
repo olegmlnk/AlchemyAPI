@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure
 {
-    public class AlchemyDbContext : IdentityDbContext<UserEntity, IdentityRole<Guid>, Guid>
+    public class AlchemyDbContext : IdentityDbContext<UserEntity, IdentityRole<long>, long>
     {
         public AlchemyDbContext(DbContextOptions<AlchemyDbContext> options) : base(options) 
         {
@@ -17,7 +17,6 @@ namespace Alchemy.Infrastructure
         public DbSet<AppointmentEntity> Appointments { get; set; }
         public DbSet<ServiceEntity> Services { get; set; }
         public DbSet<MasterEntity> Masters { get; set; }
-        public DbSet<UserEntity> Users { get; set; }
         public DbSet<MasterSchedule> MasterSchedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

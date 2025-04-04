@@ -26,7 +26,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpGet("GetAvailableSlots/{masterId:guid}")]
-        public async Task<ActionResult<List<MasterSchedule>>> GetAvailableSlots(Guid masterId)
+        public async Task<ActionResult<List<MasterSchedule>>> GetAvailableSlots(long masterId)
         {
             var slots = await _service.GetAvailableSlots(masterId);
 
@@ -37,7 +37,7 @@ namespace AlchemyAPI.Controllers
         public async Task<ActionResult> CreateAppointment([FromBody] AppointmentRequest request)
         {
             var (appointment, error) = Appointment.Create(
-                Guid.NewGuid(),
+                long.NewGuid(),
                 request.AppointmentDate,
                 request.Description,
                 request.MasterId,
@@ -50,7 +50,7 @@ namespace AlchemyAPI.Controllers
             }
 
             var appointmentId = await _service.CreateAppointment(appointment);
-            if (appointmentId == Guid.Empty)
+            if (appointmentId == long.Empty)
             {
                 return BadRequest("Chosen date is not available");
             }
@@ -58,7 +58,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpPut("Update{id:guid}")]
-        public async Task<ActionResult<Guid>> UpdateAppointment(Guid id, [FromBody] AppointmentRequest request)
+        public async Task<ActionResult<long>> UpdateAppointment(long id, [FromBody] AppointmentRequest request)
         {
             var appointmentId = await _service.UpdateAppointment(id, request.AppointmentDate, request.Description, request.MasterId, request.ServiceId, request.UserId);
 
@@ -66,7 +66,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpDelete("Delete{id:guid}")]
-        public async Task<ActionResult<Guid>> DeleteAppointment(Guid id)
+        public async Task<ActionResult<long>> DeleteAppointment(long id)
         {
             return Ok(await _service.DeleteAppointment(id));
         }

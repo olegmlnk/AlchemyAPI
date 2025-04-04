@@ -4,8 +4,8 @@
     {
         private MasterSchedule() { }
 
-        public Guid Id { get; private set; }
-        public Guid MasterId { get; private set; }
+        public long Id { get; private set; }
+        public long MasterId { get; private set; }
         public DateTime AvailableFrom { get; private set; }
         public DateTime AvailableTo { get; private set; }
         public bool IsBooked { get;  set; }

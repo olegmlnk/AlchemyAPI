@@ -30,7 +30,7 @@ namespace AlchemyAPI.Controllers
         public async Task<ActionResult> CreateMaster([FromBody] MasterRequest request)
         {
             var (master, error) = Master.Create(
-                Guid.NewGuid(),
+                long.NewGuid(),
                 request.Name,
                 request.Expeirence,
                 request.Description,
@@ -47,7 +47,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpPut("Update{id:guid}")]
-        public async Task<ActionResult<Guid>> UpdateMaster(Guid id, [FromBody] MasterRequest request)
+        public async Task<ActionResult<long>> UpdateMaster(long id, [FromBody] MasterRequest request)
         {
             var masterId = await _masterService.UpdateMaster(id, request.Name, request.Expeirence, request.Description);
 
@@ -55,7 +55,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpDelete("Delete{id:guid}")]
-        public async Task<ActionResult<Guid>> DeleteMaster(Guid id)
+        public async Task<ActionResult<long>> DeleteMaster(long id)
         {
             return Ok(await _masterService.DeleteMaster(id));
         }

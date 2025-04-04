@@ -40,7 +40,7 @@ namespace AlchemyAPI
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
 
-            builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
+            builder.Services.AddIdentity<User, IdentityRole<long>>(options =>
             {
                 options.Password.RequiredLength = 8;
                 options.Password.RequireNonAlphanumeric = false;

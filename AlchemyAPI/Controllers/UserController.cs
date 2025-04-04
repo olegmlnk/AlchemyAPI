@@ -11,10 +11,10 @@ namespace AlchemyAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly RoleManager<IdentityRole<long>> _roleManager;
         private readonly UserManager<User> _userManager;
 
-        public UserController(IUserService userService, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
+        public UserController(IUserService userService, UserManager<User> userManager, RoleManager<IdentityRole<long>> roleManager)
         {
             _userService = userService;
             _userManager = userManager;

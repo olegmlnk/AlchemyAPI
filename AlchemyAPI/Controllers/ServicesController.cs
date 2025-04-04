@@ -34,7 +34,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpGet("GetById{id:guid}")]
-        public async Task<ActionResult<ServiceResponse>> GetServiceById(Guid id)
+        public async Task<ActionResult<ServiceResponse>> GetServiceById(long id)
         {
             var service = await _servicesService.GetServiceById(id);
           
@@ -43,9 +43,9 @@ namespace AlchemyAPI.Controllers
 
 
         [HttpPost("Create")]
-        public async Task<ActionResult<Guid>> CreateService([FromBody] ServiceRequest request)
+        public async Task<ActionResult<long>> CreateService([FromBody] ServiceRequest request)
         {
-            var (service, error) = Service.Create(Guid.NewGuid(), request.Title, request.Description, request.Price, request.Duration);
+            var (service, error) = Service.Create(long.NewGuid(), request.Title, request.Description, request.Price, request.Duration);
 
             if(!string.IsNullOrEmpty(error))
             {
@@ -58,14 +58,14 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpPut("Update{id:guid}")]
-        public async Task<ActionResult<Guid>> UpdateService(Guid id, [FromBody] ServiceRequest request)
+        public async Task<ActionResult<long>> UpdateService(long id, [FromBody] ServiceRequest request)
         {
            var serviceId = await _servicesService.UpdateService(id, request.Title, request.Description, request.Price, request.Duration);
             return Ok(serviceId);
         }
 
         [HttpDelete("Delete{id:guid}")]
-        public async Task<ActionResult<Guid>> DeleteService(Guid id)
+        public async Task<ActionResult<long>> DeleteService(long id)
         {
             var serviceId = await _servicesService.DeleteService(id);
             return Ok(serviceId);

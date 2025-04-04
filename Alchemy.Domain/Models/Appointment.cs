@@ -6,7 +6,7 @@ namespace Alchemy.Domain.Models
         public const int MAX_DESCRIPTION_LENGTH = 255;
 
         private Appointment() { }
-        private Appointment(Guid id, DateTime appointmentDate, string description, Guid masterId , Guid serviceId, Guid userId)
+        private Appointment(long id, DateTime appointmentDate, string description, long masterId , long serviceId, long userId)
         {
             Id = id;
             AppointmentDate = appointmentDate;
@@ -16,17 +16,17 @@ namespace Alchemy.Domain.Models
             UserId = userId;
         }
 
-        public Guid Id { get; private set; }
+        public long Id { get; private set; }
         public DateTime AppointmentDate { get; private set; } = DateTime.UtcNow;
         public string Description { get; private set; } = string.Empty;
-        public Guid MasterId { get; private set; }
+        public long MasterId { get; private set; }
         public Master Master { get; private set; }
-        public Guid ServiceId { get; private set; }
+        public long ServiceId { get; private set; }
         public Service Service { get; private set; }
-        public Guid UserId { get; private set; }
+        public long UserId { get; private set; }
         public User User { get; set; }
 
-        public static (Appointment Appointment, string Error) Create(Guid id, DateTime appointmentDate, string description, Guid masterId, Guid serviceId, Guid userId)
+        public static (Appointment Appointment, string Error) Create(long id, DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
         {
             var error = string.Empty;
 

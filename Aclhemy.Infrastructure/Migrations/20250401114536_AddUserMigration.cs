@@ -59,12 +59,12 @@ namespace Alchemy.Infrastructure.Migrations
                 oldType: "nvarchar(max)",
                 oldNullable: true);
 
-            migrationBuilder.AddColumn<Guid>(
+            migrationBuilder.AddColumn<long>(
                 name: "UserId1",
                 table: "Appointment",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new long("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointment_UserId1",
@@ -133,7 +133,7 @@ namespace Alchemy.Infrastructure.Migrations
                 oldType: "nvarchar(50)",
                 oldMaxLength: 50);
 
-            migrationBuilder.AddColumn<Guid>(
+            migrationBuilder.AddColumn<long>(
                 name: "UserEntityId",
                 table: "Appointment",
                 type: "uniqueidentifier",

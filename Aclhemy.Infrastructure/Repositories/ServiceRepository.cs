@@ -27,7 +27,7 @@ namespace Alchemy.Infrastructure.Repositories
             return services;
         }
 
-        public async Task<Guid> GetServiceById(Guid id)
+        public async Task<long> GetServiceById(long id)
         {
             var service = await _context.Services.FindAsync(id);
 
@@ -37,7 +37,7 @@ namespace Alchemy.Infrastructure.Repositories
             return service.Id;
         }
 
-        public async Task<Guid> CreateService(Service service)
+        public async Task<long> CreateService(Service service)
         {
             var serviceEntity = new ServiceEntity
             {
@@ -54,7 +54,7 @@ namespace Alchemy.Infrastructure.Repositories
             return service.Id;
         }
 
-        public async Task<Guid> UpdateService(Guid id, string title, string description, decimal price, int duration)
+        public async Task<long> UpdateService(long id, string title, string description, decimal price, int duration)
         {
             await _context.Services
                 .Where(s => s.Id == id)
@@ -67,7 +67,7 @@ namespace Alchemy.Infrastructure.Repositories
             return id;
         }
 
-        public async Task<Guid> DeleteService(Guid id)
+        public async Task<long> DeleteService(long id)
         {
             await _context.Services
                 .Where(s => s.Id == id)

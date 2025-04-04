@@ -25,7 +25,7 @@ namespace Alchemy.Infrastructure.Configurations
                 .IsRequired();
 
             builder.HasOne(a => a.User)
-                .WithMany()
+                .WithMany(a => a.Appointments)
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 

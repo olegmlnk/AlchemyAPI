@@ -11,32 +11,32 @@ namespace Alchemy.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<Guid>(
+            migrationBuilder.AddColumn<long>(
                 name: "MasterId",
                 table: "Appointments",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new long("00000000-0000-0000-0000-000000000000"));
 
-            migrationBuilder.AddColumn<Guid>(
+            migrationBuilder.AddColumn<long>(
                 name: "ServiceId",
                 table: "Appointments",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new long("00000000-0000-0000-0000-000000000000"));
 
-            migrationBuilder.AddColumn<Guid>(
+            migrationBuilder.AddColumn<long>(
                 name: "UserId",
                 table: "Appointments",
                 type: "uniqueidentifier",
                 nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                defaultValue: new long("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.CreateTable(
                 name: "Master",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<long>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Expeirence = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -50,7 +50,7 @@ namespace Alchemy.Infrastructure.Migrations
                 name: "Service",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<long>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -65,7 +65,7 @@ namespace Alchemy.Infrastructure.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<long>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -91,7 +91,7 @@ namespace Alchemy.Infrastructure.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<long>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -105,8 +105,8 @@ namespace Alchemy.Infrastructure.Migrations
                 name: "MasterSchedules",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MasterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<long>(type: "uniqueidentifier", nullable: false),
+                    MasterId = table.Column<long>(type: "uniqueidentifier", nullable: false),
                     AvailableFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AvailableTo = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsBooked = table.Column<bool>(type: "bit", nullable: false)
@@ -126,13 +126,13 @@ namespace Alchemy.Infrastructure.Migrations
                 name: "Appointment",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<long>(type: "uniqueidentifier", nullable: false),
                     AppointmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MasterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserEntityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    MasterId = table.Column<long>(type: "uniqueidentifier", nullable: false),
+                    ServiceId = table.Column<long>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<long>(type: "uniqueidentifier", nullable: false),
+                    UserEntityId = table.Column<long>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {

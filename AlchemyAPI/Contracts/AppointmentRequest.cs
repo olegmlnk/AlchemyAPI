@@ -4,8 +4,8 @@
     (
         DateTime AppointmentDate,
         string Description,
-        Guid MasterId,
-        Guid UserId,
-        Guid ServiceId
+        long MasterId,
+        long UserId,
+        long ServiceId
     );
 }

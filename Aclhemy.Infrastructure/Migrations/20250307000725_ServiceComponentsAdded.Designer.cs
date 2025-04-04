@@ -27,7 +27,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Infrastructure.Entities.AppointmentEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -46,7 +46,7 @@ namespace Alchemy.Infrastructure.Migrations
 
             modelBuilder.Entity("Alchemy.Infrastructure.Entities.ServiceEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 

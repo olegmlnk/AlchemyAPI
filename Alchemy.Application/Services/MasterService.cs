@@ -18,22 +18,22 @@ namespace Alchemy.Application.Services
             return await _masterRepository.GetMasters();
         }
 
-        public async Task<Guid> GetMasterById(Guid id)
+        public async Task<long> GetMasterById(long id)
         {
             return await _masterRepository.GetMasterById(id);
         }
 
-        public async Task<Guid> CreateMaster(Master master)
+        public async Task<long> CreateMaster(Master master)
         {
             return await _masterRepository.CreateMaster(master);
         }
 
-        public async Task<Guid> UpdateMaster(Guid id, string name, string expeirence, string description)
+        public async Task<long> UpdateMaster(long id, string name, string expeirence, string description)
         {
             return await _masterRepository.UpdateMaster(id, name, expeirence, description);
         }
 
-        public async Task<Guid> DeleteMaster(Guid id)
+        public async Task<long> DeleteMaster(long id)
         {
             return await _masterRepository.DeleteMaster(id);
         }

@@ -13,14 +13,14 @@ namespace Alchemy.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<List<MasterSchedule>> GetAvailableSlots(Guid masterId)
+        public async Task<List<MasterSchedule>> GetAvailableSlots(long masterId)
         {
             return await _context.MasterSchedules
                 .Where(x => x.MasterId == masterId && x.IsBooked == false)
                 .ToListAsync();
         }
 
-        public async Task<bool> BookSlot(Guid slotId)
+        public async Task<bool> BookSlot(long slotId)
         {
             var slot = await _context.MasterSchedules.FindAsync(slotId);
 

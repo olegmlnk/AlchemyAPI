@@ -4,10 +4,10 @@ namespace AlchemyAPI.Contracts
 {
     public record AppointmentResponse
     (
-        Guid Id,
+        long Id,
         DateTime AppointmentDate,
         string Description,
-        Guid UserId,
-        Guid MasterId,
-        Guid ServiceId);
+        long UserId,
+        long MasterId,
+        long ServiceId);
 }
