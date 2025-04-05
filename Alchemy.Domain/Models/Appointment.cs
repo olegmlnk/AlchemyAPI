@@ -6,9 +6,8 @@ namespace Alchemy.Domain.Models
         public const int MAX_DESCRIPTION_LENGTH = 255;
 
         private Appointment() { }
-        private Appointment(long id, DateTime appointmentDate, string description, long masterId , long serviceId, long userId)
+        private Appointment(DateTime appointmentDate, string description, long masterId , long serviceId, long userId)
         {
-            Id = id;
             AppointmentDate = appointmentDate;
             Description = description;
             MasterId = masterId;
@@ -17,7 +16,7 @@ namespace Alchemy.Domain.Models
         }
 
         public long Id { get; private set; }
-        public DateTime AppointmentDate { get; private set; } = DateTime.UtcNow;
+        public DateTime AppointmentDate { get; private set; } = DateTime.Now;
         public string Description { get; private set; } = string.Empty;
         public long MasterId { get; private set; }
         public Master Master { get; private set; }
@@ -26,7 +25,7 @@ namespace Alchemy.Domain.Models
         public long UserId { get; private set; }
         public User User { get; set; }
 
-        public static (Appointment Appointment, string Error) Create(long id, DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
+        public static (Appointment Appointment, string Error) Create(DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
         {
             var error = string.Empty;
 
@@ -40,7 +39,7 @@ namespace Alchemy.Domain.Models
                 return(null, "Appointment date cannot be in the past");
             }
 
-            var appointment = new Appointment(id, appointmentDate, description, masterId, serviceId, userId);
+            var appointment = new Appointment(appointmentDate, description, masterId, serviceId, userId);
 
             return (appointment, error);
         }

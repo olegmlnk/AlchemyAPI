@@ -2,6 +2,8 @@
 using Alchemy.Domain.Models;
 using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
+using System.Linq;
 
 namespace AlchemyAPI.Controllers
 {
@@ -21,11 +23,20 @@ namespace AlchemyAPI.Controllers
         {
             var appointments = await _service.GetAppointment();
 
-            var response = appointments.Select(a => new AppointmentResponse(a.Id, a.AppointmentDate, a.Description, a.UserId, a.MasterId, a.ServiceId));
+            if (appointments == null  || !appointments.Any())
+                return NotFound("No appointments found");
+
+            var response = appointments.Select(a => new AppointmentResponse(
+                a.Id, 
+                a.AppointmentDate.ToString("dd.MM, HH:mm"), 
+                a.Description, 
+                a.UserId, 
+                a.MasterId, 
+                a.ServiceId));
             return Ok(response);
         }
 
-        [HttpGet("GetAvailableSlots/{masterId:guid}")]
+        [HttpGet("GetAvailableSlots")]
         public async Task<ActionResult<List<MasterSchedule>>> GetAvailableSlots(long masterId)
         {
             var slots = await _service.GetAvailableSlots(masterId);
@@ -37,35 +48,38 @@ namespace AlchemyAPI.Controllers
         public async Task<ActionResult> CreateAppointment([FromBody] AppointmentRequest request)
         {
             var (appointment, error) = Appointment.Create(
-                long.NewGuid(),
                 request.AppointmentDate,
                 request.Description,
                 request.MasterId,
                 request.UserId,
                 request.ServiceId);
 
-            if(!string.IsNullOrEmpty(error))
-            {
-                return BadRequest("Chosen date is not available");
-            }
+            if (!string.IsNullOrEmpty(error))
+                return BadRequest($"Validation error: {error}");
 
             var appointmentId = await _service.CreateAppointment(appointment);
-            if (appointmentId == long.Empty)
-            {
-                return BadRequest("Chosen date is not available");
-            }
+
+            if (appointmentId == null)
+                return BadRequest("The selected date/time is already booked.");
+
             return Ok("Appointment booked successfully");
         }
 
-        [HttpPut("Update{id:guid}")]
+        [HttpPut("Update")]
         public async Task<ActionResult<long>> UpdateAppointment(long id, [FromBody] AppointmentRequest request)
         {
-            var appointmentId = await _service.UpdateAppointment(id, request.AppointmentDate, request.Description, request.MasterId, request.ServiceId, request.UserId);
+            var appointmentId = await _service.UpdateAppointment(
+                id, 
+                request.AppointmentDate,
+                request.Description, 
+                request.MasterId, 
+                request.ServiceId, 
+                request.UserId);
 
             return Ok(appointmentId);
         }
 
-        [HttpDelete("Delete{id:guid}")]
+        [HttpDelete("Delete")]
         public async Task<ActionResult<long>> DeleteAppointment(long id)
         {
             return Ok(await _service.DeleteAppointment(id));

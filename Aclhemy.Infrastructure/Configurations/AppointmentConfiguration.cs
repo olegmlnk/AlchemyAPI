@@ -11,6 +11,10 @@ namespace Alchemy.Infrastructure.Configurations
         {
             builder.HasKey(a => a.Id);
 
+            builder.Property(a => a.Id)
+                .ValueGeneratedOnAdd()
+                .IsRequired();
+
             builder.Property(a => a.AppointmentDate)
                 .IsRequired();
 
