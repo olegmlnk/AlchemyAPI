@@ -23,12 +23,16 @@ namespace Alchemy.Infrastructure.Repositories
 
             var masters = masterEntities
                 .Select(m => Master.Create(
-                    m.Id,
                     m.Name,
                     m.Expeirence,
                     m.Description,
                     m.Appointments
-                        .Select(a => Appointment.Create(a.Id, a.AppointmentDate, a.Description, a.MasterId, a.ServiceId, a.UserId).Appointment)
+                        .Select(a => Appointment.Create(
+                            a.AppointmentDate,
+                            a.Description, 
+                            a.MasterId, 
+                            a.ServiceId, 
+                            a.UserId).Appointment)
                         .ToList()
                 ).master)
                 .ToList();
@@ -85,5 +89,6 @@ namespace Alchemy.Infrastructure.Repositories
 
             return master.Id;
         }
+
     }
 }

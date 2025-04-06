@@ -6,9 +6,8 @@
         public const int MAX_EXPEIRENCE_LENGTH = 25;
 
         private Master() { }
-        private Master(long id, string name, string expeirence, string description, List<Appointment> appointments)
+        private Master(string name, string expeirence, string description, List<Appointment> appointments)
         {
-            Id = id;
             Name = name;
             Expeirence = expeirence;
             Description = description;
@@ -21,7 +20,7 @@
         public string Description { get; private set; } = string.Empty;
         public List<Appointment> Appointments { get; private set; }
 
-        public static (Master master, string error) Create(long id, string name, string expeirence, string description, List<Appointment> appointments)
+        public static (Master master, string error) Create(string name, string expeirence, string description, List<Appointment> appointments)
         {
             var error = string.Empty;
 
@@ -35,7 +34,7 @@
                 Console.WriteLine("Expeirence cannot be empty or longer than 25 symbols length");
             }
 
-            var master = new Master(id, name, expeirence, description, appointments);
+            var master = new Master(name, expeirence, description, appointments);
 
             return (master, error);
         }

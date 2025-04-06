@@ -21,7 +21,12 @@ namespace Alchemy.Infrastructure.Repositories
                 .ToListAsync();
 
             var appointments = appointmentEntities
-                .Select(a => Appointment.Create(a.Id, a.AppointmentDate, a.Description, a.MasterId, a.ServiceId, a.UserId).Appointment)
+                .Select(a => Appointment.Create(a.AppointmentDate, 
+                a.Description, 
+                a.MasterId, 
+                a.ServiceId, 
+                a.UserId)
+                .Appointment)
                 .ToList();
 
             return appointments;
@@ -38,7 +43,14 @@ namespace Alchemy.Infrastructure.Repositories
             return appointment.Id;
         }
 
-        public async Task<long> UpdateAppointment(long id, DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
+        public async Task<long> UpdateAppointment(
+            long id, 
+            DateTime 
+            appointmentDate, 
+            string description, 
+            long masterId, 
+            long serviceId, 
+            long userId)
         {
             await _context.Appointments
                 .Where(a => a.Id == id)
