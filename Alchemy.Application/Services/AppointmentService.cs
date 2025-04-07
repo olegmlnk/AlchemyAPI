@@ -17,36 +17,38 @@ namespace Alchemy.Application.Services
 
         public async Task<List<Appointment>> GetAppointment()
         {
-            return await _appointmentRepository.GetAppointment();
+            return await _appointmentRepository.GetAllAppointmentsAsync();
         }
 
         public async Task<long> GetAppointmentById(long id)
         {
-            return await _appointmentRepository.GetAppointmentById(id);
+            return await _appointmentRepository.GetAppointmentByIdAsync(id);
         }
 
         public async Task<long> CreateAppointment(Appointment appointment)
         {
-            return await _appointmentRepository.CreateAppointment(appointment);
+            return await _appointmentRepository.CreateAppointmentAsync(appointment);
         }
 
         public async Task<long> UpdateAppointment(long id, DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
         {
             return await _appointmentRepository.UpdateAppointment(id, appointmentDate, description, masterId, serviceId, userId);
         }
-        public async Task<long> DeleteAppointment(long id)
+       
+        public async Task<List<Appointment>> GetAppointmentsByUserIdAsync(long userId)
         {
-            return await _appointmentRepository.DeleteAppointment(id);
+
         }
 
-        public async Task<List<MasterSchedule>> GetAvailableSlots(long masterId)
+        public async Task<List<Appointment>> GetAppointmentsByMasterIdAsync(long masterId)
         {
-            return await _masterScheduleRepository.GetAvailableSlots(masterId);
+
+
         }
 
-        public async Task<bool> BookAppointment(long slotId, long clientId)
+        public async Task<bool> CancelAppointmentAsync(long appointmentId)
         {
-            return await _masterScheduleRepository.BookSlot(slotId);
+
         }
     }
 }

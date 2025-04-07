@@ -1,9 +1,12 @@
-﻿namespace Alchemy.Infrastructure.Entities
+﻿using Alchemy.Domain.Models;
+
+namespace Alchemy.Infrastructure.Entities
 {
     public class AppointmentEntity
     {
         public long Id { get; set; }
-        public DateTime AppointmentDate { get; set; } = DateTime.Now;
+        public long ScheduleSlotId { get;  set; }
+        public MasterSchedule? ScheduleSlot { get; set; }
         public string Description { get; set; } = string.Empty;
         public long UserId { get; set; }
         public UserEntity? User { get; set; }

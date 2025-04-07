@@ -4,11 +4,12 @@
     {
         private MasterSchedule() { }
 
-        public long Id { get; private set; }
-        public long MasterId { get; private set; }
-        public DateTime SlotTime { get; private set; }
+        public long Id { get; set; }
+        public long MasterId { get; set; }
+        public Master Master { get; set; }
+        public DateTime SlotTime { get; set; }
         public bool IsBooked { get;  set; }
 
-        public virtual Master? Master { get; private set; }
+        public Appointment Appointment { get; set; }
     }
 }

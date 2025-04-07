@@ -28,7 +28,7 @@ namespace Alchemy.Infrastructure.Repositories
                     m.Description,
                     m.Appointments
                         .Select(a => Appointment.Create(
-                            a.AppointmentDate,
+                            a.ScheduleSlotId,
                             a.Description, 
                             a.MasterId, 
                             a.ServiceId, 

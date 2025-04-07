@@ -15,7 +15,7 @@ namespace Alchemy.Infrastructure.Configurations
                 .ValueGeneratedOnAdd()
                 .IsRequired();
 
-            builder.Property(a => a.AppointmentDate)
+            builder.Property(a => a.ScheduleSlotId)
                 .IsRequired();
 
             builder.Property(a => a.Description)
@@ -46,7 +46,7 @@ namespace Alchemy.Infrastructure.Configurations
                 .HasForeignKey(a => a.MasterId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(a => new { a.MasterId, a.AppointmentDate })
+            builder.HasIndex(a => new { a.MasterId, a.ScheduleSlotId })
                 .IsUnique();
         }
     }
