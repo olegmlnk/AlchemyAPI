@@ -15,6 +15,9 @@ namespace Alchemy.Infrastructure.Configurations
                 .ValueGeneratedOnAdd()
                 .IsRequired();
 
+            builder.HasIndex(s => s.Id)
+                .IsUnique();
+
             builder.Property(s => s.Title)
                 .HasMaxLength(Service.MAX_TITLE_LENGTH)
                 .IsRequired();

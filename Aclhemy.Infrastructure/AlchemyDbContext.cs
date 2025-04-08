@@ -1,5 +1,4 @@
-﻿using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Configurations;
+﻿using Alchemy.Infrastructure.Configurations;
 using Alchemy.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -17,7 +16,7 @@ namespace Alchemy.Infrastructure
         public DbSet<AppointmentEntity> Appointments { get; set; }
         public DbSet<ServiceEntity> Services { get; set; }
         public DbSet<MasterEntity> Masters { get; set; }
-        public DbSet<MasterSchedule> MasterSchedules { get; set; }
+        public DbSet<MasterScheduleEntity> MasterSchedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

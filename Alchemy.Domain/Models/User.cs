@@ -6,17 +6,19 @@ namespace Alchemy.Domain.Models
     {
         public User() { }
 
-        public User(string username, string passwordHash, string email, List<Appointment> appointments)
+        public User(string username, string passwordHash, string email, List<Appointment> appointments, string role)
         {
             UserName = username; 
             PasswordHash = passwordHash;
             Email = email;
+            Role = role;
             Appointments = appointments ?? new List<Appointment>(); 
         }
 
         public List<Appointment> Appointments { get; private set; }
+        public string Role { get; private set; } = string.Empty;
 
-        public static (User User, string Error) Create(string username, string passwordHash, string email, List<Appointment> appointments)
+        public static (User User, string Error) Create(string username, string passwordHash, string email, List<Appointment> appointments, string role)
         {
             if (string.IsNullOrWhiteSpace(username))
             {
@@ -33,7 +35,7 @@ namespace Alchemy.Domain.Models
                 return (null, "Email cannot be empty");
             }
 
-            var user = new User(username, passwordHash, email, appointments);
+            var user = new User(username, passwordHash, email, appointments, role);
             return (user, null);
         }
     }

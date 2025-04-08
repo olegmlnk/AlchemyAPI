@@ -6,7 +6,7 @@
         public const int MAX_DESCRIPTION_LENGTH = 255;
 
         private Service() { }
-        private Service(long id, string title, string description, decimal price, double duration)
+        private Service(long id, string title, string description, double price, double duration)
         {
             Id = id;
             Title = title;
@@ -18,10 +18,10 @@
         public long Id { get; private set; }
         public string Title { get; private set; } = string.Empty;
         public string Description { get; private set; } = string.Empty;
-        public decimal Price { get; private set; }
+        public double Price { get; private set; }
         public double Duration { get; private set; }
 
-        public static (Service Service, string error) Create(long id, string title, string description, decimal price, double duration)
+        public static (Service Service, string error) Create(long id, string title, string description, double price, double duration)
         {
             var error = string.Empty;
             if (string.IsNullOrEmpty(title) || title.Length > MAX_TITLE_LENGTH)

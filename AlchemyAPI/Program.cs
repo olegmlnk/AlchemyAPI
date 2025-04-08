@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Alchemy.Domain;
 using Alchemy.Domain.Models;
+using System.Text;
 
 
 namespace AlchemyAPI
@@ -39,7 +40,7 @@ namespace AlchemyAPI
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
 
-            builder.Services.AddIdentity<User, IdentityRole<long>>(options =>
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 8;
                 options.Password.RequireNonAlphanumeric = false;
@@ -64,7 +65,10 @@ namespace AlchemyAPI
                         ValidateIssuer = true,
                         ValidateAudience = false,
                         ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+                        (builder.Configuration["Jwt:Key"]!))
                     };
                 });
 
