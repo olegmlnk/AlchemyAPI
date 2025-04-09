@@ -1,6 +1,7 @@
 ﻿using Alchemy.Domain;
 using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace Alchemy.Application.Services
@@ -11,6 +12,7 @@ namespace Alchemy.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IJwtProvider _jwtProvider;
         private readonly ILogger<UserService> _logger;
+        private readonly UserManager
         public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository, IJwtProvider jwtProvider, ILogger<UserService> logger)
         {
             _passwordHasher = passwordHasher;
@@ -21,16 +23,20 @@ namespace Alchemy.Application.Services
 
         public async Task Register(string username, string email, string password)
         {
-            var hashedPassword = _passwordHasher.GenerateHash(password);
-
-            var (user, error) = User.Create(username, hashedPassword, email, new List<Appointment>());
-            if (error != null)
+            var user = new User
             {
-                _logger.LogError("User creation failed: {Error}", error);
-                throw new Exception(error);
-            }
+                UserName = registerRequest.Username,
+                Email = registerRequest.Email
+            };
 
-            await _userRepository.AddUser(user);
+            var result = await _userManager.CreateAsync(user);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            await _userManager.AddToRoleAsync(user, "Client");
+
+            return Ok("Registration successfull");
         }
 
 

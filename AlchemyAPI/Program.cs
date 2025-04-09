@@ -40,6 +40,9 @@ namespace AlchemyAPI
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
 
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+            builder.Services.AddSingleton<JwtProvider>();
+
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 8;
@@ -60,6 +63,8 @@ namespace AlchemyAPI
             })
                 .AddJwtBearer(options =>
                 {
+                    var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
+
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -91,6 +96,7 @@ namespace AlchemyAPI
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 

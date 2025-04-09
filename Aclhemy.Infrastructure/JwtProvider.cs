@@ -2,6 +2,7 @@
 using Alchemy.Domain.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Data.SqlTypes;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -17,21 +18,30 @@ namespace Alchemy.Infrastructure
             _options = options.Value;
         }
 
-        public string GenerateToken(User user)
+        public string GenerateToken(User user, IList<string> roles)
         {
-            Claim[] claims = [new("userId", user.Id.ToString())];
+            var claims = new List<Claim>
+            { 
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
 
-            var signingCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)), SecurityAlgorithms.HmacSha256);
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
+                issuer: _options.Issuer,
+                audience: _options.Audience,
                 claims: claims,
-                signingCredentials: signingCredentials,
-                expires: DateTime.UtcNow.AddHours(_options.ExpiresHours));
+                expires: DateTime.UtcNow.AddHours(_options.ExpiresHours),
+                signingCredentials: creds
+                );
 
-            var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return tokenValue;
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

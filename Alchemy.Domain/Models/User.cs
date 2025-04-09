@@ -6,37 +6,31 @@ namespace Alchemy.Domain.Models
     {
         public User() { }
 
-        public User(string username, string passwordHash, string email, List<Appointment> appointments, string role)
+        public User(string username, string passwordHash, string email, ICollection<Appointment>? appointments = null)
         {
-            UserName = username; 
+            UserName = username;
             PasswordHash = passwordHash;
             Email = email;
-            Role = role;
-            Appointments = appointments ?? new List<Appointment>(); 
+            Appointments = appointments ?? new List<Appointment>();
         }
 
-        public List<Appointment> Appointments { get; private set; }
-        public string Role { get; private set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
 
-        public static (User User, string Error) Create(string username, string passwordHash, string email, List<Appointment> appointments, string role)
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+        public static (User? User, string? Error) Create(string username, string passwordHash, string email, ICollection<Appointment>? appointments = null)
         {
             if (string.IsNullOrWhiteSpace(username))
-            {
                 return (null, "Username cannot be empty");
-            }
 
             if (string.IsNullOrWhiteSpace(passwordHash))
-            {
                 return (null, "Password cannot be empty");
-            }
 
             if (string.IsNullOrWhiteSpace(email))
-            {
                 return (null, "Email cannot be empty");
-            }
 
-            var user = new User(username, passwordHash, email, appointments, role);
-            return (user, null);
+            return (new User(username, passwordHash, email, appointments), null);
         }
     }
 }

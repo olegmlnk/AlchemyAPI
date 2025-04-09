@@ -1,5 +1,4 @@
-﻿using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Entities;
+﻿using Alchemy.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,25 +8,14 @@ namespace Alchemy.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
-            builder.HasKey(u => u.Id);
+            builder.Property(u => u.FirstName)
+                .HasMaxLength(25);
 
-            builder.Property(u => u.Id)
-                .ValueGeneratedOnAdd()
-                .IsRequired();
-
-            builder.Property(u => u.UserName)
-                .HasMaxLength(25)
-                .IsRequired();
-
-            builder.Property(u => u.PasswordHash)
-                .IsRequired();
-
-            builder.Property(u => u.Email)
-                .HasMaxLength(50)
-                .IsRequired();
+            builder.Property(u => u.LastName)
+                .HasMaxLength(55);
 
             builder.HasMany(u => u.Appointments)
-                .WithOne()
+                .WithOne(u => u.User)
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

@@ -5,6 +5,8 @@ namespace Alchemy.Infrastructure.Entities
 {
     public class UserEntity : IdentityUser<long> 
     {
-        public List<AppointmentEntity>? Appointments { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty; 
+        public ICollection<AppointmentEntity>? Appointments { get; set; }
     }
 }
