@@ -50,7 +50,7 @@ namespace Alchemy.Infrastructure.Repositories
                 Appointments = user.Appointments.Select(a => new AppointmentEntity
                 {
                     Id = a.Id,
-                    AppointmentDate = a.AppointmentDate,
+                    ScheduleSlotId = a.ScheduleSlotId,
                     Description = a.Description,
                     UserId = a.UserId,
                     ServiceId = a.ServiceId,

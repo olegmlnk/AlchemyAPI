@@ -54,7 +54,7 @@ namespace Alchemy.Infrastructure.Repositories
             return service.Id;
         }
 
-        public async Task<long> UpdateService(long id, string title, string description, decimal price, int duration)
+        public async Task<long> UpdateService(long id, string title, string description, double price, double duration)
         {
             await _context.Services
                 .Where(s => s.Id == id)

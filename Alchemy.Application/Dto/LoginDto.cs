@@ -1,4 +1,4 @@
-﻿namespace AlchemyAPI.Contracts
+﻿namespace Alchemy.Application.Dto
 {
     public class LoginDto
     {

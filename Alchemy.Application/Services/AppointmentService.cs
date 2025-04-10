@@ -15,40 +15,39 @@ namespace Alchemy.Application.Services
             _masterScheduleRepository = masterScheduleRepository;
         }
 
-        public async Task<List<Appointment>> GetAppointment()
+        public Task<bool> BookAppointment(long slotId, long clientId)
         {
-            return await _appointmentRepository.GetAllAppointmentsAsync();
+            throw new NotImplementedException();
         }
 
-        public async Task<long> GetAppointmentById(long id)
+        public Task<long> CreateAppointment(Appointment appointment)
         {
-            return await _appointmentRepository.GetAppointmentByIdAsync(id);
+            throw new NotImplementedException();
         }
 
-        public async Task<long> CreateAppointment(Appointment appointment)
+        public Task<long> DeleteAppointment(long id)
         {
-            return await _appointmentRepository.CreateAppointmentAsync(appointment);
+            throw new NotImplementedException();
         }
 
-        public async Task<long> UpdateAppointment(long id, DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
+        public Task<List<Appointment>> GetAppointment()
         {
-            return await _appointmentRepository.UpdateAppointment(id, appointmentDate, description, masterId, serviceId, userId);
-        }
-       
-        public async Task<List<Appointment>> GetAppointmentsByUserIdAsync(long userId)
-        {
-
+            throw new NotImplementedException();
         }
 
-        public async Task<List<Appointment>> GetAppointmentsByMasterIdAsync(long masterId)
+        public Task<long> GetAppointmentById(long id)
         {
-
-
+            throw new NotImplementedException();
         }
 
-        public async Task<bool> CancelAppointmentAsync(long appointmentId)
+        public Task<List<MasterSchedule>> GetAvailableSlots(long masterId)
         {
+            throw new NotImplementedException();
+        }
 
+        public Task<long> UpdateAppointment(long id, DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

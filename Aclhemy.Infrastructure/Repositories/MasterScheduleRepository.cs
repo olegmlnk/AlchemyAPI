@@ -15,17 +15,18 @@ namespace Alchemy.Infrastructure.Repositories
 
         public async Task<List<MasterSchedule>> GetAvailableSlots(long masterId)
         {
-            var now = DateTime.UtcNow;
-            var maxDate = now.AddDays(30);
+            //var now = DateTime.UtcNow;
+            //var maxDate = now.AddDays(30);
 
-            return await _context.MasterSchedules
-                .Where(slot =>
-                    slot.MasterId == masterId &&
-                    !slot.IsBooked &&
-                    slot.SlotTime >= now &&
-                    slot.SlotTime <= maxDate)
-                .OrderBy(slot => slot.SlotTime)
-                .ToListAsync();
+            //return await _context.MasterSchedules
+            //    .Where(slot =>
+            //        slot.MasterId == masterId &&
+            //        !slot.IsBooked &&
+            //        slot.SlotTime >= now &&
+            //        slot.SlotTime <= maxDate)
+            //    .OrderBy(slot => slot.SlotTime)
+            //    .ToListAsync();
+            throw new Exception("Not implemented yet");
         }
 
         public async Task<bool> BookSlot(long slotId)

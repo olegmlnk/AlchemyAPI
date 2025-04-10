@@ -11,7 +11,6 @@ using Alchemy.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Alchemy.Domain;
-using Alchemy.Domain.Models;
 using System.Text;
 
 

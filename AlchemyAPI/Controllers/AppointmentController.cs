@@ -2,6 +2,7 @@
 using Alchemy.Domain.Models;
 using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace AlchemyAPI.Controllers
 {
@@ -33,7 +34,7 @@ namespace AlchemyAPI.Controllers
 
             var response = appointments.Select(a => new AppointmentResponse(
                 a.Id, 
-                a.AppointmentDate.ToString("dd.MM, HH:mm"), 
+                a.ScheduleSlotId,
                 a.Description, 
                 a.UserId, 
                 a.MasterId, 

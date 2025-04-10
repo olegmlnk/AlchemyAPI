@@ -1,4 +1,5 @@
-﻿using Alchemy.Domain.Interfaces;
+﻿using Alchemy.Application.Dto;
+using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
 using Alchemy.Infrastructure;
 using AlchemyAPI.Contracts;
@@ -20,41 +21,26 @@ namespace AlchemyAPI.Controllers
         {
             _userService = userService;
             _userManager = userManager;
-            _roleManager = roleManager;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerRequest)
         {
-            var user = new User
-            {
-                UserName = registerRequest.Username,
-                Email = registerRequest.Email
-            };
+            var (success, errors) = await _userService.Register(registerRequest.Username, registerRequest.Email, registerRequest.Password);
+            if(!success)
+                return BadRequest(new { errors });
 
-            var result = await _userManager.CreateAsync(user);
-
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            await _userManager.AddToRoleAsync(user, "Client");
-
-            return Ok("Registration successfull");
+            return Ok("Registration successful");
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequest loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            var (success, errors) = await _userService.Login(loginRequest.Email, loginRequest.Password);
+            if(!success)
+                return BadRequest(new { errors });
 
-            if(user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
-                return Unauthorized("Check your email or password");
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var token = _jwtProvider.GenerateToken(user, roles);
-
-            return Ok(new { token });
-
+            return Ok(new { token = success });
         }
 
         //[HttpPost("add-role")]

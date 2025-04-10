@@ -2,7 +2,7 @@
 {
     public record AppointmentRequest
     (
-        DateTime AppointmentDate,
+        long ScheduleSlotId,
         string Description,
         long MasterId,
         long UserId,

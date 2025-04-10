@@ -8,6 +8,6 @@ namespace Alchemy.Domain.Repositories
         Task<long> DeleteService(long id);
         Task<List<Service>> GetServices();
         Task<long> GetServiceById(long id);
-        Task<long> UpdateService(long id, string title, string description, decimal price, int duration);
+        Task<long> UpdateService(long id, string title, string description, double price, double duration);
     }
 }
