@@ -1,4 +1,5 @@
-﻿using Alchemy.Domain.Models;
+﻿using Alchemy.Domain.Interfaces;
+using Alchemy.Domain.Models;
 using Alchemy.Domain.Services;
 using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Mvc;
@@ -45,9 +46,9 @@ namespace AlchemyAPI.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<long>> CreateService([FromBody] ServiceRequest request)
         {
-            var (service, error) = Service.Create(long.NewGuid(), request.Title, request.Description, request.Price, request.Duration);
+            var (service, error) = Service.Create(0, request.Title, request.Description, request.Price, request.Duration);
 
-            if(!string.IsNullOrEmpty(error))
+            if (!string.IsNullOrEmpty(error))
             {
                 return BadRequest(error);
             }

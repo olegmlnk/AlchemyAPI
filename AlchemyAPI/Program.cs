@@ -91,6 +91,7 @@ namespace AlchemyAPI
             builder.Services.AddScoped<IMasterService, MasterService>();
             builder.Services.AddScoped<IMasterRepository, MasterRepository>();
 
+            builder.Services.AddScoped<IMasterScheduleService, MasterScheduleService>();
             builder.Services.AddScoped<IMasterScheduleRepository,  MasterScheduleRepository>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();

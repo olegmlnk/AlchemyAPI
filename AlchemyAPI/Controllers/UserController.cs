@@ -36,12 +36,13 @@ namespace AlchemyAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequest loginRequest)
         {
-            var (success, errors) = await _userService.Login(loginRequest.Email, loginRequest.Password);
-            if(!success)
+            var (token, errors) = await _userService.Login(loginRequest.Email, loginRequest.Password);
+            if (string.IsNullOrEmpty(token))
                 return BadRequest(new { errors });
 
-            return Ok(new { token = success });
+            return Ok(new { token });
         }
+
 
         //[HttpPost("add-role")]
         //public async Task<IActionResult> AddRole([FromBody] string role)

@@ -1,10 +1,16 @@
 ﻿using Alchemy.Domain.Models;
 
-namespace Alchemy.Domain.Repositories
+namespace Alchemy.Domain.Interfaces
 {
     public interface IMasterScheduleRepository
     {
-        Task<bool> BookSlot(long slotId);
-        Task<List<MasterSchedule>> GetAvailableSlots(long masterId);
+        Task<MasterSchedule?> GetByIdAsync(long id);
+        Task<bool> IsSlotAvailableAsync(long id);
+        Task MarkSlotAsBookedAsync(long id);
+        Task MarkSlotAsAvailableAsync(long id);
+        Task<List<MasterSchedule>> GetAllAsync();
+        Task<List<MasterSchedule>> GetByMasterIdAsync(long masterId);
+        Task<bool> UpdateAsync(MasterSchedule schedule);
+
     }
 }

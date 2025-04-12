@@ -1,114 +1,106 @@
-﻿using Alchemy.Domain.Interfaces;
+﻿using Alchemy.Application.Services;
+using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
-using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using System.Threading.Tasks;
 
-namespace AlchemyAPI.Controllers
+namespace Alchemy.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AppointmentController : ControllerBase
     {
-        private readonly IAppointmentService _service;
-        private readonly ILogger<AppointmentController> _logger;
+        private readonly IAppointmentService _appointmentService;
+        private readonly IMasterScheduleService _masterScheduleService;
 
-        public AppointmentController(IAppointmentService service, ILogger<AppointmentController> logger)
+        public AppointmentController(IAppointmentService appointmentService, IMasterScheduleService masterScheduleService)
         {
-            _service = service;
-            _logger = logger;
+            _appointmentService = appointmentService;
+            _masterScheduleService = masterScheduleService;
         }
 
-        [HttpGet("Get")]
-        public async Task<ActionResult<List<AppointmentResponse>>> GetAppointments()
+        // GET: api/Appointment
+        [HttpGet]
+        public async Task<IActionResult> GetAppointments()
         {
-            _logger.LogInformation("Getting all appointments...");
-
-            var appointments = await _service.GetAppointment();
-
-            if (appointments == null || !appointments.Any())
-            {
-                _logger.LogWarning("No appointments found");
-                return NotFound("No appointments found");
-            }
-
-            var response = appointments.Select(a => new AppointmentResponse(
-                a.Id, 
-                a.ScheduleSlotId,
-                a.Description, 
-                a.UserId, 
-                a.MasterId, 
-                a.ServiceId));
-
-            _logger.LogInformation($"Found {appointments.Count} appointments");
-            return Ok(response);
+            var appointments = await _appointmentService.GetAllAppointmentsAsync();
+            return Ok(appointments);
         }
 
-        [HttpGet("GetAvailableSlots")]
-        public async Task<ActionResult<List<MasterSchedule>>> GetAvailableSlots(long masterId)
+        // GET: api/Appointment/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAppointmentById(long id)
         {
-            _logger.LogInformation($"Getting available slots for master with id {masterId}...");
-            var slots = await _service.GetAvailableSlots(masterId);
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+            if (appointment == null)
+                return NotFound("Appointment not found");
 
-            if(slots == null || !slots.Any())
-            {
-                _logger.LogWarning($"No available slots found for master with id {masterId}");
-                return NotFound();
-            }
-
-            _logger.LogInformation($"Found {slots.Count} available slots for master with id {masterId}");
-            return Ok(slots);
+            return Ok(appointment);
         }
 
-        [HttpPost("Create")]
-        public async Task<ActionResult> CreateAppointment([FromBody] AppointmentRequest request)
+        // POST: api/Appointment
+        [HttpPost]
+        public async Task<IActionResult> CreateAppointment([FromBody] Appointment appointment)
         {
-            _logger.LogInformation("Creating appointment...");
+            // Спочатку перевіряємо, чи є доступний слот у MasterSchedule
+            var schedule = await _masterScheduleService.GetByIdAsync(appointment.ScheduleSlotId);
+            if (schedule == null || schedule.IsBooked)
+                return BadRequest("Slot is not available or already booked.");
 
-            var (appointment, error) = Appointment.Create(
-                request.AppointmentDate,
-                request.Description,
-                request.MasterId,
-                request.UserId,
-                request.ServiceId);
+            // Створюємо запис про бронювання
+            var createdAppointmentId = await _appointmentService.CreateAppointmentAsync(appointment);
+            if (createdAppointmentId == null)
+                return BadRequest("Failed to create appointment.");
 
-            if (!string.IsNullOrEmpty(error))
-            {
-                return BadRequest($"Validation error: {error}");
-            }
+            // Оновлюємо статус слота
+            schedule.IsBooked = true;
+            await _masterScheduleService.MarkSlotAsBookedAsync(schedule.Id);
 
-            var appointmentId = await _service.CreateAppointment(appointment);
-
-            if (appointmentId == null)
-                return BadRequest("The selected date/time is already booked.");
-
-            return Ok("Appointment booked successfully");
+            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointmentId }, appointment);
         }
 
-        [HttpPut("Update")]
-        public async Task<ActionResult<long>> UpdateAppointment(long id, [FromBody] AppointmentRequest request)
+        // PUT: api/Appointment/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAppointment(long id, [FromBody] Appointment appointment)
         {
-            _logger.LogInformation($"Updating appointment with id {id}...");
-            var appointmentId = await _service.UpdateAppointment(
-                id, 
-                request.AppointmentDate,
-                request.Description, 
-                request.MasterId, 
-                request.ServiceId, 
-                request.UserId);
+            if (id != appointment.Id)
+                return BadRequest("Appointment ID mismatch.");
 
-            _logger.LogInformation($"Appointment with id {id} has been updated!");
-            return Ok();
+            var updatedAppointmentId = await _appointmentService.UpdateAppointmentAsync(
+                id,
+                appointment.ScheduleSlotId.ToString(),
+                appointment.Description,
+                appointment.MasterId,
+                appointment.ServiceId,
+                appointment.UserId
+            );
+            if (updatedAppointmentId == null)
+                return NotFound("Appointment not found");
+
+            return NoContent();
         }
 
-        [HttpDelete("Delete")]
-        public async Task<ActionResult<long>> DeleteAppointment(long id)
+        // DELETE: api/Appointment/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> CancelAppointment(long id)
         {
-            _logger.LogInformation($"Deleting appointment with id {id}...");
-            var result = await _service.DeleteAppointment(id);
+            var isCancelled = await _appointmentService.CancelAppointmentAsync(id);
+            if (!isCancelled)
+                return NotFound("Appointment not found");
 
-            _logger.LogInformation($"Appointment with id {id} has been deleted!");
-            return Ok();
+            // Якщо запис було скасовано, звільняємо слот в MasterSchedule
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+            if (appointment == null)
+                return NotFound("Appointment not found");
+
+            var schedule = await _masterScheduleService.GetByIdAsync(appointment.ScheduleSlotId);
+            if (schedule == null)
+                return NotFound("Schedule slot not found");
+
+            schedule.IsBooked = false;
+            await _masterScheduleService.MarkSlotAsAvailableAsync(schedule.Id);
+
+            return NoContent();
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using Alchemy.Domain.Models;
-
-namespace Alchemy.Infrastructure.Entities
+﻿namespace Alchemy.Infrastructure.Entities
 {
     public class MasterScheduleEntity
     {

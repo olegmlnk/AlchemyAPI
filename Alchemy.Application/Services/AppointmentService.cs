@@ -7,47 +7,53 @@ namespace Alchemy.Application.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepository;
-        private readonly IMasterScheduleRepository _masterScheduleRepository;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, IMasterScheduleRepository masterScheduleRepository)
+        public AppointmentService(IAppointmentRepository appointmentRepository)
         {
             _appointmentRepository = appointmentRepository;
-            _masterScheduleRepository = masterScheduleRepository;
         }
 
-        public Task<bool> BookAppointment(long slotId, long clientId)
+        public async Task<bool> CancelAppointmentAsync(long appointmentId)
         {
-            throw new NotImplementedException();
+            return await _appointmentRepository.CancelAppointmentAsync(appointmentId);
         }
 
-        public Task<long> CreateAppointment(Appointment appointment)
+        public async Task<long?> CreateAppointmentAsync(Appointment appointment)
         {
-            throw new NotImplementedException();
+            if (appointment == null)
+                throw new ArgumentNullException(nameof(appointment));
+
+            var id = await _appointmentRepository.CreateAppointmentAsync(appointment);
+
+            if (id == null)
+                throw new Exception("Appointment creation failed");
+
+            return id;
         }
 
-        public Task<long> DeleteAppointment(long id)
+        public async Task<List<Appointment?>> GetAllAppointmentsAsync()
         {
-            throw new NotImplementedException();
+            return await _appointmentRepository.GetAllAppointmentsAsync();
         }
 
-        public Task<List<Appointment>> GetAppointment()
+        public async Task<Appointment?> GetAppointmentByIdAsync(long id)
         {
-            throw new NotImplementedException();
+            return await _appointmentRepository.GetAppointmentByIdAsync(id);
         }
 
-        public Task<long> GetAppointmentById(long id)
+        public async Task<List<Appointment>> GetAppointmentByMasterIdAsync(long masterId)
         {
-            throw new NotImplementedException();
+            return await _appointmentRepository.GetAppointmentByMasterIdAsync(masterId);
         }
 
-        public Task<List<MasterSchedule>> GetAvailableSlots(long masterId)
+        public async Task<List<Appointment>> GetAppointmentByUserIdAsync(long userId)
         {
-            throw new NotImplementedException();
+            return await _appointmentRepository.GetAppointmentByUserIdAsync(userId);
         }
 
-        public Task<long> UpdateAppointment(long id, DateTime appointmentDate, string description, long masterId, long serviceId, long userId)
+        public async Task<long?> UpdateAppointmentAsync(long id, string scheduleSlotId, string description, long masterId, long serviceId, long userId)
         {
-            throw new NotImplementedException();
+            return await _appointmentRepository.UpdateAppointmentAsync(id, scheduleSlotId, description, masterId, serviceId, userId);
         }
     }
 }

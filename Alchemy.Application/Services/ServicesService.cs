@@ -1,6 +1,6 @@
-﻿using Alchemy.Domain.Models;
+﻿using Alchemy.Domain.Interfaces;
+using Alchemy.Domain.Models;
 using Alchemy.Domain.Repositories;
-using Alchemy.Domain.Services;
 
 namespace Alchemy.Application.Services
 {
@@ -28,7 +28,7 @@ namespace Alchemy.Application.Services
             return await _serviceRepository.CreateService(service);
         }
 
-        public async Task<long> UpdateService(long id, string title, string description, decimal price, int duration)
+        public async Task<long> UpdateService(long id, string title, string description, double price, int duration)
         {
             return await _serviceRepository.UpdateService(id, title, description, price, duration);
         }

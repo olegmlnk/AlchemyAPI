@@ -4,7 +4,7 @@
     (
         string Title,
         string Description,
-        decimal Price,
+        double Price,
         int Duration
     );
 }

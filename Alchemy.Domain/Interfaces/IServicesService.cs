@@ -1,6 +1,6 @@
 ﻿using Alchemy.Domain.Models;
 
-namespace Alchemy.Domain.Services
+namespace Alchemy.Domain.Interfaces
 {
     public interface IServicesService
     {
@@ -8,6 +8,6 @@ namespace Alchemy.Domain.Services
         Task<long> DeleteService(long id);
         Task<long> GetServiceById(long id);
         Task<List<Service>> GetServices();
-        Task<long> UpdateService(long id, string title, string description, decimal price, int duration);
+        Task<long> UpdateService(long id, string title, string description, double price, int duration);
     }
 }

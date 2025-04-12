@@ -1,5 +1,6 @@
-﻿using Alchemy.Domain.Models;
-using Alchemy.Domain.Repositories;
+﻿using Alchemy.Domain.Interfaces;
+using Alchemy.Domain.Models;
+using Alchemy.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
@@ -13,40 +14,83 @@ namespace Alchemy.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<List<MasterSchedule>> GetAvailableSlots(long masterId)
+        public async Task<MasterSchedule?> GetByIdAsync(long id)
         {
-            //var now = DateTime.UtcNow;
-            //var maxDate = now.AddDays(30);
-
-            //return await _context.MasterSchedules
-            //    .Where(slot =>
-            //        slot.MasterId == masterId &&
-            //        !slot.IsBooked &&
-            //        slot.SlotTime >= now &&
-            //        slot.SlotTime <= maxDate)
-            //    .OrderBy(slot => slot.SlotTime)
-            //    .ToListAsync();
-            throw new Exception("Not implemented yet");
+            var entity = await _context.MasterSchedules.FindAsync(id);
+            return entity == null ? null : MapToDomain(entity);
         }
 
-        public async Task<bool> BookSlot(long slotId)
+        public async Task<bool> IsSlotAvailableAsync(long id)
         {
-            var slot = await _context.MasterSchedules.FirstOrDefaultAsync(s => s.Id == slotId);
+            var entity = await _context.MasterSchedules.FindAsync(id);
+            return entity != null && !entity.IsBooked;
+        }
 
-            if (slot is null || slot.IsBooked)
+        public async Task MarkSlotAsBookedAsync(long id)
+        {
+            var entity = await _context.MasterSchedules.FindAsync(id);
+            if (entity == null)
+                throw new KeyNotFoundException("Schedule slot not found");
+
+            entity.IsBooked = true;
+            _context.MasterSchedules.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task MarkSlotAsAvailableAsync(long id)
+        {
+            var entity = await _context.MasterSchedules.FindAsync(id);
+            if (entity == null)
+                throw new KeyNotFoundException("Schedule slot not found");
+
+            entity.IsBooked = false;
+            _context.MasterSchedules.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<MasterSchedule>> GetAllAsync()
+        {
+            var entities = await _context.MasterSchedules
+                .AsNoTracking()
+                .ToListAsync();
+
+            return entities.Select(MapToDomain).ToList();
+        }
+
+        public async Task<List<MasterSchedule>> GetByMasterIdAsync(long masterId)
+        {
+            var entities = await _context.MasterSchedules
+                .Where(ms => ms.MasterId == masterId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return entities.Select(MapToDomain).ToList();
+        }
+
+        private MasterSchedule MapToDomain(MasterScheduleEntity entity)
+        {
+            return new MasterSchedule
+            {
+                Id = entity.Id,
+                MasterId = entity.MasterId,
+                SlotTime = entity.SlotTime,
+                IsBooked = entity.IsBooked
+            };
+        }
+
+        public async Task<bool> UpdateAsync(MasterSchedule schedule)
+        {
+            var entity = await _context.MasterSchedules.FindAsync(schedule.Id);
+            if (entity == null)
                 return false;
 
-            slot.IsBooked = true;
+            entity.IsBooked = schedule.IsBooked;
+            entity.SlotTime = schedule.SlotTime;
+            entity.MasterId = schedule.MasterId;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateException)
-            {
-                return false;
-            }
+            _context.MasterSchedules.Update(entity);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
     }
 }
