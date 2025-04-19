@@ -15,7 +15,7 @@ namespace AlchemyAPI.Controllers
     {
         private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
-        private readonly JwtProvider _jwtProvider;
+        private readonly IJwtProvider _jwtProvider;
 
         public UserController(IUserService userService, UserManager<User> userManager, RoleManager<IdentityRole<long>> roleManager)
         {

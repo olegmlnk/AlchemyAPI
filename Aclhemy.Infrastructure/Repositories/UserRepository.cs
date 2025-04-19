@@ -17,6 +17,33 @@ namespace Alchemy.Infrastructure.Repositories
             _mapper = mapper;
         }
 
+        public async Task<List<UserEntity>> GetAllUsers()
+        {
+            var usersEntity = await _alchemyDbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Appointments)
+                .ToListAsync();
+
+            var users = usersEntity
+                .Select(u => new UserEntity
+                {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    PasswordHash = u.PasswordHash,
+                    Email = u.Email,
+                    Appointments = u.Appointments.Select(a => new AppointmentEntity
+                    {
+                        Id = a.Id,
+                        ScheduleSlotId = a.ScheduleSlotId,
+                        Description = a.Description,
+                        UserId = a.UserId,
+                        ServiceId = a.ServiceId,
+                        MasterId = a.MasterId
+                    }).ToList()
+                });
+
+            return users.ToList();
+        }
         public async Task<User> GetUserByEmail(string email)
         {
             var userEntity = await _alchemyDbContext.Users

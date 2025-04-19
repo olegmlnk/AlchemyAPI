@@ -50,7 +50,7 @@ namespace AlchemyAPI.Controllers
             var masterId = await _masterService.CreateMaster(master);
 
             _logger.LogInformation("Master has been created successfully");
-            return Ok(masterId);
+            return CreatedAtAction(nameof(GetMasters), new { id = masterId }, masterId);
         }
 
         [HttpPut("Update/{id:long}")]

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Alchemy.Domain;
 using System.Text;
+using Alchemy.Domain.Models;
 
 
 namespace AlchemyAPI
@@ -42,7 +43,7 @@ namespace AlchemyAPI
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
             builder.Services.AddSingleton<JwtProvider>();
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 8;
                 options.Password.RequireNonAlphanumeric = false;
@@ -123,6 +124,7 @@ namespace AlchemyAPI
             app.MapControllers();
 
             app.Run();
+
         }
     }
 }

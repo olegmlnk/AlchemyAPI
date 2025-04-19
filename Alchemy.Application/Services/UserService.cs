@@ -1,5 +1,4 @@
-﻿using Alchemy.Application.Dto;
-using Alchemy.Domain;
+﻿using Alchemy.Domain;
 using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
 using Microsoft.AspNetCore.Identity;

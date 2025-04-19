@@ -55,7 +55,7 @@ namespace AlchemyAPI.Controllers
 
             var serviceId = await _servicesService.CreateService(service);
 
-            return Ok(serviceId);
+            return CreatedAtAction(nameof(GetServiceById), new { id = serviceId }, serviceId);
         }
 
         [HttpPut("Update{id:guid}")]

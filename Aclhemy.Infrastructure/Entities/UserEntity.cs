@@ -1,5 +1,4 @@
-﻿using Alchemy.Domain.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Alchemy.Infrastructure.Entities
 {
