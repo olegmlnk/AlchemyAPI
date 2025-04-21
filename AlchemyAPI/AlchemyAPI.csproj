@@ -28,9 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Aclhemy.Infrastructure\Alchemy.Infrastructure.csproj" />
     <ProjectReference Include="..\Alchemy.Application\Alchemy.Application.csproj" />
     <ProjectReference Include="..\Alchemy.Domain\Alchemy.Domain.csproj" />
+    <ProjectReference Include="..\Alchemy.Infrastructure\Alchemy.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

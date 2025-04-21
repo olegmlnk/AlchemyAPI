@@ -1,6 +1,7 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
 using Alchemy.Infrastructure.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
@@ -31,6 +32,7 @@ namespace Alchemy.Infrastructure.Repositories
             return appointments;
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<Appointment?> GetAppointmentByIdAsync(long id)
         {
             var appointmentEntity = await _context.Appointments.FindAsync(id);
@@ -48,7 +50,7 @@ namespace Alchemy.Infrastructure.Repositories
             return appointment;
         }
 
-
+        [Authorize(Roles = "Admin")]
         public async Task<List<Appointment>> GetAppointmentByMasterIdAsync(long masterId)
         {
             var appointmentEntity = await _context.Appointments
@@ -67,6 +69,7 @@ namespace Alchemy.Infrastructure.Repositories
             return apointments;
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<List<Appointment?>> GetAppointmentByUserIdAsync(long userId)
         {
             var appointmentEntity = await _context.Appointments

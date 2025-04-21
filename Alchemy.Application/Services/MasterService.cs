@@ -1,6 +1,7 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Domain.Repositories;
 using Alchemy.Domain.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Alchemy.Application.Services
 {

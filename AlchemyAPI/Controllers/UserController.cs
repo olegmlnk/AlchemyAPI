@@ -1,9 +1,6 @@
-﻿using Alchemy.Application.Dto;
-using Alchemy.Domain.Interfaces;
+﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
-using Alchemy.Infrastructure;
 using AlchemyAPI.Contracts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

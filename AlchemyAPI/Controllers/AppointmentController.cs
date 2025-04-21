@@ -1,13 +1,14 @@
 ﻿using Alchemy.Application.Services;
 using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace Alchemy.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;

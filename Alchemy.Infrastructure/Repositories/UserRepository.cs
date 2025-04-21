@@ -1,12 +1,13 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
 using Alchemy.Infrastructure.Entities;
-using Alchemy.Infrastructure.Mappings;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
 {
+    [Authorize(Roles = "Admin")]
     public class UserRepository : IUserRepository
     {
         private readonly AlchemyDbContext _alchemyDbContext;
@@ -44,6 +45,7 @@ namespace Alchemy.Infrastructure.Repositories
 
             return users.ToList();
         }
+
         public async Task<User> GetUserByEmail(string email)
         {
             var userEntity = await _alchemyDbContext.Users

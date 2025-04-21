@@ -1,4 +1,5 @@
 ﻿using Alchemy.Domain;
+using BCrypt.Net;
 
 namespace Alchemy.Infrastructure
 {

@@ -114,7 +114,6 @@ namespace AlchemyAPI
                     c.RoutePrefix = "";
                 });
             }
-
             app.UseHttpsRedirection();
 
             app.UseAuthentication();

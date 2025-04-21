@@ -1,5 +1,6 @@
 ﻿using Alchemy.Application.Services;
 using Alchemy.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Alchemy.API.Controllers
@@ -23,6 +24,7 @@ namespace Alchemy.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<MasterSchedule>> GetById(long id)
         {
             var schedule = await _scheduleService.GetByIdAsync(id);
@@ -61,6 +63,7 @@ namespace Alchemy.API.Controllers
         }
 
         [HttpPut("{id}/free")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MarkAsAvailable(long id)
         {
             try

@@ -1,12 +1,14 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Domain.Services;
 using AlchemyAPI.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlchemyAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class MasterController : ControllerBase
     {
         private readonly IMasterService _masterService;
