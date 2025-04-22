@@ -1,7 +1,5 @@
 ﻿using Alchemy.Domain.Interfaces;
-using Alchemy.Domain.Models;
 using AlchemyAPI.Contracts;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlchemyAPI.Controllers
@@ -11,13 +9,10 @@ namespace AlchemyAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly UserManager<User> _userManager;
-        private readonly IJwtProvider _jwtProvider;
 
-        public UserController(IUserService userService, UserManager<User> userManager, RoleManager<IdentityRole<long>> roleManager)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _userManager = userManager;
         }
 
         [HttpPost("register")]

@@ -1,12 +1,11 @@
 ﻿using Alchemy.Infrastructure.Configurations;
 using Alchemy.Infrastructure.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure
 {
-    public class AlchemyDbContext : IdentityDbContext<UserEntity, IdentityRole<long>, long>
+    public class AlchemyDbContext : IdentityDbContext<UserEntity, RoleEntity, long>
     {
         public AlchemyDbContext(DbContextOptions<AlchemyDbContext> options) : base(options) 
         {
@@ -25,6 +24,7 @@ namespace Alchemy.Infrastructure
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
             modelBuilder.ApplyConfiguration(new MasterConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
         }
     }
 }
