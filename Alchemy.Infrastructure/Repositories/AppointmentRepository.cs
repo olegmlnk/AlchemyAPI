@@ -15,7 +15,7 @@ namespace Alchemy.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<List<Appointment?>> GetAllAppointmentsAsync()
+        public async Task<List<Appointment>> GetAllAppointmentsAsync()
         {
             var appointmentEntities = await _context.Appointments
                 .AsNoTracking()
@@ -33,7 +33,7 @@ namespace Alchemy.Infrastructure.Repositories
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<Appointment?> GetAppointmentByIdAsync(long id)
+        public async Task<Appointment> GetAppointmentByIdAsync(long id)
         {
             var appointmentEntity = await _context.Appointments.FindAsync(id);
 
@@ -70,7 +70,7 @@ namespace Alchemy.Infrastructure.Repositories
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<List<Appointment?>> GetAppointmentByUserIdAsync(long userId)
+        public async Task<List<Appointment>> GetAppointmentByUserIdAsync(long userId)
         {
             var appointmentEntity = await _context.Appointments
                  .Where(a => a.UserId == userId)
@@ -88,7 +88,7 @@ namespace Alchemy.Infrastructure.Repositories
             return apointments;
         }
 
-        public async Task<long?> CreateAppointmentAsync(Appointment appointment)
+        public async Task<long> CreateAppointmentAsync(Appointment appointment)
         {
             var scheduleSlot = await _context.MasterSchedules
                 .FirstOrDefaultAsync(s => s.Id == appointment.ScheduleSlotId);

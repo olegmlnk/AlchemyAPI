@@ -6,7 +6,7 @@
         public const int MAX_EXPEIRENCE_LENGTH = 25;
 
         private Master() { }
-        private Master(string name, string expeirence, string description, List<Appointment> appointments)
+        public Master(string name, string expeirence, string description, List<Appointment> appointments)
         {
             Name = name;
             Expeirence = expeirence;

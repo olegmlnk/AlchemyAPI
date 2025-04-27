@@ -2,7 +2,7 @@
 
 namespace Alchemy.Domain.Interfaces
 {
-    public interface IAppointmentService
+    public interface IAppointmentService 
     {
         Task<List<Appointment?>> GetAllAppointmentsAsync();
         Task<Appointment?> GetAppointmentByIdAsync(long id);

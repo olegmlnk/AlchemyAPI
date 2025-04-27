@@ -73,6 +73,13 @@ namespace Alchemy.Infrastructure.Repositories
             {
                 Id = entity.Id,
                 MasterId = entity.MasterId,
+                Master = new Master(
+                    entity.Master.Name,
+                    entity.Master.Expeirence,
+                    entity.Master.Description,
+                    entity.Master.Appointments.Select(a => new Appointment
+                    {  }).ToList()
+                ),
                 SlotTime = entity.SlotTime,
                 IsBooked = entity.IsBooked
             };
