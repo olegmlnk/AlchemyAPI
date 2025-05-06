@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Alchemy.Domain\Alchemy.Domain.csproj" />
+    <ProjectReference Include="..\Alchemy.Infrastructure\Alchemy.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

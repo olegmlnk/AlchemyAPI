@@ -1,18 +1,19 @@
 ﻿using Alchemy.Domain;
 using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
+using Alchemy.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace Alchemy.Application.Services
 {
-    public class UserService : IUserService
+    public class UserService : IUserService 
     {
-        private readonly IJwtProvider _jwtProvider;
+        private readonly JwtHandler _jwtHandler;
         private readonly UserManager<User> _userManager;
-        public UserService(IJwtProvider jwtProvider, UserManager<User> userManager)
+        public UserService(JwtHandler jwtHandler, UserManager<User> userManager)
         {
-            _jwtProvider = jwtProvider;
+            _jwtHandler = jwtHandler;
             _userManager = userManager;
         }
 
@@ -46,7 +47,7 @@ namespace Alchemy.Application.Services
             }
 
             var roles = await _userManager.GetRolesAsync(user);
-            var token = _jwtProvider.GenerateToken(user, roles);
+            var token = await _jwtHandler.GenerateToken(user);
 
             return (token, null);
         }
