@@ -2,7 +2,7 @@
 
 namespace Alchemy.Domain.Models
 {
-    public class User : IdentityUser<long>
+    public class User : IdentityUser
     {
         public User() { }
 

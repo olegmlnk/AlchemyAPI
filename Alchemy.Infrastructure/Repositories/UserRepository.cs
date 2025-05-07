@@ -55,7 +55,7 @@ namespace Alchemy.Infrastructure.Repositories
             return _mapper.Map<User>(userEntity);
         }
 
-        public async Task<long> DeleteUser(long id)
+        public async Task<string> DeleteUser(string id)
         {
             var user = await _alchemyDbContext.Users.FindAsync(id);
 

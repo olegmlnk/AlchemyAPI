@@ -5,7 +5,7 @@ namespace Alchemy.Domain.Interfaces
 {
     public interface IUserRepository
     {
-        Task<long> DeleteUser(long id);
+        Task<string> DeleteUser(string id);
         Task<User> GetUserByEmail(string email);
         Task AddUser(User user);
     }

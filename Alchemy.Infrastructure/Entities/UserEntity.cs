@@ -2,7 +2,7 @@
 
 namespace Alchemy.Infrastructure.Entities
 {
-    public class UserEntity : IdentityUser<long> 
+    public class UserEntity : IdentityUser
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty; 

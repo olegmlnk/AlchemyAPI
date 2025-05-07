@@ -1,8 +1,11 @@
-﻿using Alchemy.Domain.Interfaces;
+﻿using System.Security.Claims;
+using Alchemy.Domain.Interfaces;
 using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Alchemy.Domain.Models;
+using Alchemy.Infrastructure;
+using AutoMapper;
 
 namespace AlchemyAPI.Controllers
 {
@@ -11,33 +14,88 @@ namespace AlchemyAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ILogger<AuthController> _logger; 
+        private readonly ILogger<AuthController> _logger;
         private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
+        private readonly JwtHandler _jwtHandler;
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService, ILogger<AuthController> logger, UserManager<User> userManager,
+            IMapper mapper)
         {
             _userService = userService;
+            _logger = logger;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerRequest)
+        public async Task<IActionResult> Register([FromBody] RegisterUserRequest user)
         {
-            var (success, errors) = await _userService.Register(registerRequest.UserName, registerRequest.Email, registerRequest.Password);
-            if(!success)
-                return BadRequest(new { errors });
+            if (user == null || !ModelState.IsValid)
+                return BadRequest();
 
-            return Ok("Registration successful");
+            var newUser = _mapper.Map<User>(user);
+            var result = await _userManager.CreateAsync(newUser, user.Password!);
+            var claim = new Claim(ClaimTypes.Email, user.Email);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                return BadRequest(new { errors });
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+            var param = new Dictionary<string, string?>
+            {
+                { "email", newUser.Email },
+                { "token", token }
+            };
+
+            if (newUser.Email == "olegmelnyk237@gmail.com")
+                await _userManager.AddToRoleAsync(newUser, "Admin");
+
+            else
+                await _userManager.AddToRoleAsync(newUser, "User");
+
+            await _userManager.AddClaimAsync(newUser, claim);
+
+            return Ok(new RegisterUserResponse { IsSuccessful = true });
         }
+
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginUserRequest user)
         {
-            var (token, errors) = await _userService.Login(loginRequest.Email, loginRequest.Password);
-            if (string.IsNullOrEmpty(token))
-                return BadRequest(new { errors });
+            var existsUser = await _userManager.FindByEmailAsync(user.Email!);
 
-            return Ok(new { token });
+            if (existsUser == null)
+                return NotFound("User not found!");
+
+            if (!await _userManager.IsEmailConfirmedAsync(existsUser))
+                return Unauthorized(new LoginUserResponse
+                    { IsLoginSuccessful = false, ErrorMessage = "Email is not confirmed" });
+
+            if (!await _userManager.CheckPasswordAsync(existsUser, user.Password!))
+            {
+                await _userManager.AccessFailedAsync(existsUser);
+
+                if (await _userManager.IsLockedOutAsync(existsUser))
+                {
+                    return Unauthorized(new LoginUserResponse
+                        { IsLoginSuccessful = false, ErrorMessage = "Account is locked" });
+                }
+
+                return Unauthorized(new LoginUserResponse
+                    { IsLoginSuccessful = false, ErrorMessage = "Invalid password" });
+            }
+
+
+            var token = await _jwtHandler.GenerateToken(existsUser);
+            await _userManager.ResetAccessFailedCountAsync(existsUser);
+
+            return Ok(new LoginUserResponse { IsLoginSuccessful = true, Token = token });
+
+
         }
-
     }
 }

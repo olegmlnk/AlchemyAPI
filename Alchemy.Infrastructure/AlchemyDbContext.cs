@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure
 {
-    public class AlchemyDbContext : IdentityDbContext<UserEntity, IdentityRole<long>, long>
+    public class AlchemyDbContext : IdentityDbContext<UserEntity, IdentityRole, string >
     {
         public AlchemyDbContext(DbContextOptions<AlchemyDbContext> options) : base(options) 
         {

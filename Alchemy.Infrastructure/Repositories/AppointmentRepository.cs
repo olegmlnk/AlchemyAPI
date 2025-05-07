@@ -88,7 +88,7 @@ namespace Alchemy.Infrastructure.Repositories
             return apointments;
         }
 
-        public async Task<long> CreateAppointmentAsync(Appointment appointment)
+        public async Task<long?> CreateAppointmentAsync(Appointment appointment)
         {
             var scheduleSlot = await _context.MasterSchedules
                 .FirstOrDefaultAsync(s => s.Id == appointment.ScheduleSlotId);
@@ -118,7 +118,7 @@ namespace Alchemy.Infrastructure.Repositories
             return appointmentEntity.Id;
         }
 
-        public async Task<long?> UpdateAppointmentAsync(long id, string scheduleSlotId, string description, long masterId, long serviceId, long userId)
+        public async Task<long?> UpdateAppointmentAsync(long id, string scheduleSlotId, string description,  long masterId,long  serviceId, long userId)
         {
             var appointmentEntity = await _context.Appointments.FindAsync(id);
 

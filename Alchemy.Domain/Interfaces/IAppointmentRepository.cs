@@ -5,7 +5,7 @@ namespace Alchemy.Domain.Interfaces
     public interface IAppointmentRepository
     {
         Task<bool> CancelAppointmentAsync(long appointmentId);
-        Task<long> CreateAppointmentAsync(Appointment appointment);
+        Task<long?> CreateAppointmentAsync(Appointment appointment);
         Task<List<Appointment>> GetAllAppointmentsAsync();
         Task<Appointment> GetAppointmentByIdAsync(long id);
         Task<List<Appointment>> GetAppointmentByMasterIdAsync(long masterId);

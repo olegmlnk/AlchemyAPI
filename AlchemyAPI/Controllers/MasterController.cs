@@ -55,7 +55,7 @@ namespace AlchemyAPI.Controllers
             return CreatedAtAction(nameof(GetMasters), new { id = masterId }, masterId);
         }
 
-        [HttpPut("Update/{id:long}")]
+        [HttpPut("Update/{id:}")]
         public async Task<ActionResult<long>> UpdateMaster(long id, [FromBody] MasterRequest request)
         {
             var masterId = await _masterService.UpdateMaster(
