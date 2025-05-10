@@ -94,8 +94,40 @@ namespace AlchemyAPI.Controllers
             await _userManager.ResetAccessFailedCountAsync(existsUser);
 
             return Ok(new LoginUserResponse { IsLoginSuccessful = true, Token = token });
+        }
 
+        [HttpPost("external-login")]
+        public async Task<IActionResult> ExternalLogin([FromBody] ExternalLoginRequest login)
+        {
+            var payload = await _jwtHandler.VerifyGoogleToken(login);
+            if (payload == null) return BadRequest("Invalid external Authentication");
 
+            var info = new UserLoginInfo(login.Provider!, payload.Subject, login.Provider);
+            var newUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+
+            if (newUser == null)
+            {
+                newUser = await _userManager.FindByEmailAsync(payload.Email);
+                if (newUser == null)
+                {
+                    newUser = new User { Email = payload.Email, UserName = payload.Email, FirstName = payload.GivenName, LastName = payload.FamilyName };
+                    await _userManager.CreateAsync(newUser);
+                    if (newUser.Email == "gudvinrawson@gmail.com") await _userManager.AddToRoleAsync(newUser, "Admin");
+                    else await _userManager.AddToRoleAsync(newUser, "Viewer");
+                    await _userManager.AddLoginAsync(newUser, info);
+                }
+
+                else
+                {
+                    await _userManager.AddLoginAsync(newUser, info);
+                }
+            }
+
+            if (newUser == null) return BadRequest("Invalid External Authentication");
+
+            var token = await _jwtHandler.GenerateToken(newUser);
+
+            return Ok(new LoginUserResponse { Token = token, IsLoginSuccessful = true });
         }
     }
 }

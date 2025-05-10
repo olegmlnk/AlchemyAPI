@@ -5,22 +5,50 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Google.Apis.Auth;
 
 namespace Alchemy.Infrastructure
 {
     public class JwtHandler
     {
         private readonly IConfiguration _configuration;
+        private readonly IConfigurationSection _googleSection;
         private readonly IConfigurationSection _jwtSection;
         private readonly UserManager<User> _userManager;
 
-        public JwtHandler(IConfiguration configuration, UserManager<User> userManager)
+        public JwtHandler(IConfiguration configuration, UserManager<User> userManager, IConfigurationSection googleSection, IConfigurationSection jwtSection)
         {
             _configuration = configuration;
             _jwtSection = _configuration.GetSection("Jwt");
             _userManager = userManager;
+            _googleSection = _configuration.GetSection("Google");
+        }
+        
+        public class ExternalLoginRequest
+        {
+            public string? Provider { get; set; }
+            public string? IdToken { get; set; }
         }
 
+        public async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(ExternalLoginRequest login)
+        {
+            try
+            {
+                var settings = new GoogleJsonWebSignature.ValidationSettings()
+                {
+                    Audience = [_googleSection.GetSection("ClientId").Value]
+                };
+
+                var payload = await GoogleJsonWebSignature.ValidateAsync(login.IdToken, settings);
+
+                return payload;
+            }
+
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
         public async Task<string> GenerateToken(User user)
         {
             var signingCredentials = GetSigningCredentials();
