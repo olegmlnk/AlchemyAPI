@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Alchemy.Domain.Models;
 using Alchemy.Infrastructure;
 using AutoMapper;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace AlchemyAPI.Controllers
 {
@@ -99,7 +101,7 @@ namespace AlchemyAPI.Controllers
         [HttpPost("external-login")]
         public async Task<IActionResult> ExternalLogin([FromBody] ExternalLoginRequest login)
         {
-            var payload = await _jwtHandler.VerifyGoogleToken(login);
+            var payload = await _jwtHandler.VerifyGoogleToken(login.IdToken);
             if (payload == null) return BadRequest("Invalid external Authentication");
 
             var info = new UserLoginInfo(login.Provider!, payload.Subject, login.Provider);
@@ -128,6 +130,29 @@ namespace AlchemyAPI.Controllers
             var token = await _jwtHandler.GenerateToken(newUser);
 
             return Ok(new LoginUserResponse { Token = token, IsLoginSuccessful = true });
+        }
+        
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var existUser = await _userManager.FindByEmailAsync(forgotPassword.Email!);
+            if(existUser == null) return NotFound("User not found");
+            
+            var token = await _userManager.GeneratePasswordResetTokenAsync(existUser);
+            var param = new Dictionary<string, string>
+            {
+                { "token", token! },
+                { "email", forgotPassword.Email! }
+            };
+
+            var callback = QueryHelpers.AddQueryString(forgotPassword.UserURI!, param!);
+
+            return Ok("Token was sent!");
         }
     }
 }
