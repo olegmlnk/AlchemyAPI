@@ -101,7 +101,7 @@ namespace AlchemyAPI.Controllers
         [HttpPost("external-login")]
         public async Task<IActionResult> ExternalLogin([FromBody] ExternalLoginRequest login)
         {
-            var payload = await _jwtHandler.VerifyGoogleToken(login.IdToken);
+            var payload = await _jwtHandler.VerifyGoogleToken(login);
             if (payload == null) return BadRequest("Invalid external Authentication");
 
             var info = new UserLoginInfo(login.Provider!, payload.Subject, login.Provider);
@@ -154,5 +154,29 @@ namespace AlchemyAPI.Controllers
 
             return Ok("Token was sent!");
         }
+        
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            var existUser = await _userManager.FindByEmailAsync(resetPassword.Email!);
+
+            if (existUser == null) return NotFound("User not found");
+
+            var resetPassResult = await _userManager.ResetPasswordAsync(existUser, resetPassword.Token!, resetPassword.Password!);
+
+            if (!resetPassResult.Succeeded)
+            {
+                var errors = resetPassResult.Errors.Select(e => e.Description);
+
+                return BadRequest(new { Errors = errors });
+            }
+
+            await _userManager.SetLockoutEndDateAsync(existUser, new DateTime(2000, 1, 1));
+
+            return Ok("Password has been changed successfully");
+        }
+
     }
 }
