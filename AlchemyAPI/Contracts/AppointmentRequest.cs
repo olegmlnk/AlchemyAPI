@@ -5,7 +5,7 @@
         long ScheduleSlotId,
         string Description,
         long MasterId,
-        long UserId,
+        string UserId,
         long ServiceId
     );
 }

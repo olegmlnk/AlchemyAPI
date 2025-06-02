@@ -42,8 +42,6 @@ namespace Alchemy.Domain.Models
                 throw new ValidationException("Price cannot be less or equal to zero!");
             }
 
-            var service = new Service(id, title, description, price, duration);
-
             return new Service(id, title, description, price, duration);
         }
 

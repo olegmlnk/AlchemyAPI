@@ -62,15 +62,15 @@ namespace Alchemy.Infrastructure.Repositories
                 .Select(a => Appointment.Create(
                     a.ScheduleSlotId,
                     a.Description,
+                    a.UserId,
                     a.MasterId,
-                    a.ServiceId,
-                    a.UserId).Appointment).ToList();
+                    a.ServiceId).Appointment).ToList();
 
             return apointments;
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<List<Appointment>> GetAppointmentByUserIdAsync(long userId)
+        public async Task<List<Appointment>> GetAppointmentByUserIdAsync(string userId)
         {
             var appointmentEntity = await _context.Appointments
                  .Where(a => a.UserId == userId)
@@ -81,9 +81,10 @@ namespace Alchemy.Infrastructure.Repositories
                 .Select(a => Appointment.Create(
                     a.ScheduleSlotId,
                     a.Description,
+                    a.UserId,
                     a.MasterId,
-                    a.ServiceId,
-                    a.UserId).Appointment).ToList();
+                    a.ServiceId).Appointment)
+                .ToList();
 
             return apointments;
         }
@@ -106,9 +107,9 @@ namespace Alchemy.Infrastructure.Repositories
             {
                 ScheduleSlotId = appointment.ScheduleSlotId,
                 Description = appointment.Description,
+                UserId = appointment.UserId,
                 MasterId = appointment.MasterId,
                 ServiceId = appointment.ServiceId,
-                UserId = appointment.UserId
             };
 
             await _context.Appointments.AddAsync(appointmentEntity);
@@ -118,7 +119,7 @@ namespace Alchemy.Infrastructure.Repositories
             return appointmentEntity.Id;
         }
 
-        public async Task<long?> UpdateAppointmentAsync(long id, string scheduleSlotId, string description,  long masterId,long  serviceId, long userId)
+        public async Task<long?> UpdateAppointmentAsync(long id, string scheduleSlotId, string description, string userId, long masterId,long  serviceId)
         {
             var appointmentEntity = await _context.Appointments.FindAsync(id);
 
@@ -127,9 +128,9 @@ namespace Alchemy.Infrastructure.Repositories
 
             appointmentEntity.ScheduleSlotId = long.Parse(scheduleSlotId);
             appointmentEntity.Description = description;
+            appointmentEntity.UserId = userId;
             appointmentEntity.MasterId = masterId;
             appointmentEntity.ServiceId = serviceId;
-            appointmentEntity.UserId = userId;
 
             _context.Appointments.Update(appointmentEntity);
 

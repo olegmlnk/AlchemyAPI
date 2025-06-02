@@ -46,14 +46,14 @@ namespace Alchemy.Application.Services
             return await _appointmentRepository.GetAppointmentByMasterIdAsync(masterId);
         }
 
-        public async Task<List<Appointment>> GetAppointmentByUserIdAsync(long userId)
+        public async Task<List<Appointment>> GetAppointmentByUserIdAsync(string userId)
         {
             return await _appointmentRepository.GetAppointmentByUserIdAsync(userId);
         }
 
-        public async Task<long?> UpdateAppointmentAsync(long id, string scheduleSlotId, string description, long masterId, long serviceId, long userId)
+        public async Task<long?> UpdateAppointmentAsync(long id, string scheduleSlotId, string description, string userId, long masterId, long serviceId)
         {
-            return await _appointmentRepository.UpdateAppointmentAsync(id, scheduleSlotId, description, masterId, serviceId, userId);
+            return await _appointmentRepository.UpdateAppointmentAsync(id, scheduleSlotId, description, userId, masterId, serviceId);
         }
     }
 }

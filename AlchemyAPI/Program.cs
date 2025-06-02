@@ -41,7 +41,7 @@ namespace AlchemyAPI
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
 
             builder.Services.Configure<JwtHandler>(builder.Configuration.GetSection("Jwt"));
-            builder.Services.AddSingleton<JwtHandler>();
+            builder.Services.AddScoped<JwtHandler>();
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {

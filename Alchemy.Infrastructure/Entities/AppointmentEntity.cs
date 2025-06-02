@@ -1,4 +1,6 @@
-﻿namespace Alchemy.Infrastructure.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Alchemy.Infrastructure.Entities
 {
     public class AppointmentEntity
     {
@@ -6,7 +8,7 @@
         public long ScheduleSlotId { get;  set; }
         public MasterScheduleEntity ScheduleSlot { get; set; }
         public string Description { get; set; } = string.Empty;
-        public long UserId { get; set; }
+        public string UserId { get; set; }
         public UserEntity User { get; set; }
         public long ServiceId { get; set; }
         public ServiceEntity Service { get; set; }

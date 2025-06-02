@@ -71,9 +71,9 @@ namespace Alchemy.API.Controllers
                 id,
                 appointment.ScheduleSlotId.ToString(),
                 appointment.Description,
+                appointment.UserId,
                 appointment.MasterId,
-                appointment.ServiceId,
-                appointment.UserId
+                appointment.ServiceId
             );
             if (updatedAppointmentId == null)
                 return NotFound("Appointment not found");

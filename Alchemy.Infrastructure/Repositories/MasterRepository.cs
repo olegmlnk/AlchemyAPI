@@ -30,9 +30,9 @@ namespace Alchemy.Infrastructure.Repositories
                         .Select(a => Appointment.Create(
                             a.ScheduleSlotId,
                             a.Description, 
+                            a.UserId,
                             a.MasterId, 
-                            a.ServiceId, 
-                            a.UserId).Appointment)
+                            a.ServiceId).Appointment)
                         .ToList()
                 ).master)
                 .ToList();
