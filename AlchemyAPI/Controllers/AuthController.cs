@@ -53,7 +53,7 @@ namespace AlchemyAPI.Controllers
                 { "token", token }
             };
 
-            if (newUser.Email == "olegmelnyk237@gmail.com")
+            if (newUser.Email == "admin@gmail.com")
                 await _userManager.AddToRoleAsync(newUser, "Admin");
 
             else
@@ -98,7 +98,7 @@ namespace AlchemyAPI.Controllers
             return Ok(new LoginUserResponse { IsLoginSuccessful = true, Token = token });
         }
 
-        [HttpPost("external-login")]
+        /*[HttpPost("external-login")]
         public async Task<IActionResult> ExternalLogin([FromBody] ExternalLoginRequest login)
         {
             var payload = await _jwtHandler.VerifyGoogleToken(login);
@@ -114,8 +114,8 @@ namespace AlchemyAPI.Controllers
                 {
                     newUser = new User { Email = payload.Email, UserName = payload.Email, FirstName = payload.GivenName, LastName = payload.FamilyName };
                     await _userManager.CreateAsync(newUser);
-                    if (newUser.Email == "gudvinrawson@gmail.com") await _userManager.AddToRoleAsync(newUser, "Admin");
-                    else await _userManager.AddToRoleAsync(newUser, "Viewer");
+                    if (newUser.Email == "admin@gmail.com") await _userManager.AddToRoleAsync(newUser, "Admin");
+                    else await _userManager.AddToRoleAsync(newUser, "User");
                     await _userManager.AddLoginAsync(newUser, info);
                 }
 
@@ -176,7 +176,7 @@ namespace AlchemyAPI.Controllers
             await _userManager.SetLockoutEndDateAsync(existUser, new DateTime(2000, 1, 1));
 
             return Ok("Password has been changed successfully");
-        }
+        }*/
 
     }
 }

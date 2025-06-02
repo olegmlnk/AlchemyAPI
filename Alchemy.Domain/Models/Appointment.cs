@@ -5,7 +5,7 @@
         public const int MAX_DESCRIPTION_LENGTH = 255;
 
         public Appointment() { }
-        public Appointment(long scheduleSlotId, string description, long masterId, long serviceId, long userId)
+        public Appointment(long scheduleSlotId, string description, long userId, long masterId, long serviceId)
         {
             ScheduleSlotId = scheduleSlotId;
             Description = description;
@@ -33,7 +33,7 @@
             if (description.Length > MAX_DESCRIPTION_LENGTH)
                 return (null, $"Description cannot be longer than {MAX_DESCRIPTION_LENGTH} characters.");
 
-            var appointment = new Appointment(scheduleSlotId, description, masterId, serviceId, userId);
+            var appointment = new Appointment(scheduleSlotId, description, userId, masterId, serviceId);
             return (appointment, null);
         }
     }

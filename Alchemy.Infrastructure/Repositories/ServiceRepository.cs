@@ -23,7 +23,7 @@ namespace Alchemy.Infrastructure.Repositories
                 .ToListAsync();
 
             var services = serviceEntities
-                .Select(s => Service.Create(s.Id, s.Title, s.Description, s.Price, s.Duration).Service)
+                .Select(s => Service.Create(s.Id, s.Title, s.Description, s.Price, s.Duration))
                 .ToList();
 
             return services;

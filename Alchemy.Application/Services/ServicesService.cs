@@ -28,7 +28,7 @@ namespace Alchemy.Application.Services
             return await _serviceRepository.CreateService(service);
         }
 
-        public async Task<long> UpdateService(long id, string title, string description, double price, int duration)
+        public async Task<long> UpdateService(long id, string title, string description, double price, double duration)
         {
             return await _serviceRepository.UpdateService(id, title, description, price, duration);
         }

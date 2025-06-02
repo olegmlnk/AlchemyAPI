@@ -16,12 +16,12 @@ namespace Alchemy.Infrastructure
         private readonly IConfigurationSection _jwtSection;
         private readonly UserManager<User> _userManager;
 
-        public JwtHandler(IConfiguration configuration, UserManager<User> userManager, IConfigurationSection googleSection, IConfigurationSection jwtSection)
+        public JwtHandler(IConfiguration configuration, UserManager<User> userManager)
         {
             _configuration = configuration;
-            _jwtSection = _configuration.GetSection("Jwt");
             _userManager = userManager;
-            _googleSection = _configuration.GetSection("Google");
+            _jwtSection = _configuration.GetSection("Jwt");
+            _googleSection = _configuration.GetSection("Google"); 
         }
         
         public class ExternalLoginRequest
@@ -87,7 +87,7 @@ namespace Alchemy.Infrastructure
                 issuer: _jwtSection.GetSection("Issuer").Value,
                 audience: _jwtSection.GetSection("Audience").Value,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSection.GetSection("ExpiryInMinutes").Value)),
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSection.GetSection("ExpiresHours").Value)),
                 signingCredentials: signingCred
             );
 

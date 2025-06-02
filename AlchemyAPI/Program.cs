@@ -69,19 +69,19 @@ namespace AlchemyAPI
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
-                        ValidateLifetime = true,
+                        ValidateLifetime = true, 
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = builder.Configuration["Jwt:Issuer"],
                         ValidAudience = builder.Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-                        (builder.Configuration["Jwt:Key"]!))
+                        (builder.Configuration["Jwt:SecretKey"]!))
                     };
                 });
-
+            
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("ClientPolicy", policy => policy.RequireRole("Client"));
+                options.AddPolicy("ClientPolicy", policy => policy.RequireRole("User"));
             });
 
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
@@ -98,8 +98,6 @@ namespace AlchemyAPI
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
-
-            builder.Services.AddScoped<JwtHandler>();
 
             var app = builder.Build();
 

@@ -46,11 +46,11 @@ namespace AlchemyAPI.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<long>> CreateService([FromBody] ServiceRequest request)
         {
-            var (service, error) = Service.Create(0, request.Title, request.Description, request.Price, request.Duration);
+            var service = Service.Create(0, request.Title, request.Description, request.Price, request.Duration);
 
-            if (!string.IsNullOrEmpty(error))
+            if (!ModelState.IsValid)
             {
-                return BadRequest(error);
+                return BadRequest(ValidationProblem("Something went wrong :("));
             }
 
             var serviceId = await _servicesService.CreateService(service);

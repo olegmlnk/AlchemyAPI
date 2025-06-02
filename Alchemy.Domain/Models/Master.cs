@@ -6,21 +6,21 @@
         public const int MAX_EXPEIRENCE_LENGTH = 25;
 
         private Master() { }
-        public Master(string name, string expeirence, string description, List<Appointment> appointments)
+        public Master(string name, string experience, string description, List<Appointment> appointments)
         {
             Name = name;
-            Expeirence = expeirence;
+            Experience = experience;
             Description = description;
             Appointments = appointments;
         }
 
         public long Id { get; private set; }
         public string Name { get; private set; } = string.Empty;
-        public string Expeirence { get; private set; } = string.Empty;
+        public string Experience { get; private set; } = string.Empty;
         public string Description { get; private set; } = string.Empty;
         public List<Appointment> Appointments { get; private set; }
 
-        public static (Master master, string error) Create(string name, string expeirence, string description, List<Appointment> appointments)
+        public static (Master master, string error) Create(string name, string experience, string description, List<Appointment> appointments)
         {
             var error = string.Empty;
 
@@ -29,12 +29,12 @@
                 Console.WriteLine("Description cannot be empty or er than 100 symbols length");
             }
 
-            if (string.IsNullOrEmpty(expeirence) || expeirence.Length > MAX_EXPEIRENCE_LENGTH)
+            if (string.IsNullOrEmpty(experience) || experience.Length > MAX_EXPEIRENCE_LENGTH)
             {
                 Console.WriteLine("Expeirence cannot be empty or er than 25 symbols length");
             }
 
-            var master = new Master(name, expeirence, description, appointments);
+            var master = new Master(name, experience, description, appointments);
 
             return (master, error);
         }

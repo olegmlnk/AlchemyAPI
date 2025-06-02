@@ -5,7 +5,7 @@
         long Id,
         string Title,
         string Description,
-        decimal Price,
-        int Duration
+        double Price,
+        double Duration
     );
 }

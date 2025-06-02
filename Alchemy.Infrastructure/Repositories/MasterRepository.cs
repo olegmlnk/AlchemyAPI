@@ -55,7 +55,7 @@ namespace Alchemy.Infrastructure.Repositories
             {
                 Id = master.Id,
                 Name = master.Name,
-                Expeirence = master.Expeirence,
+                Expeirence = master.Experience,
                 Description = master.Description
             };
 

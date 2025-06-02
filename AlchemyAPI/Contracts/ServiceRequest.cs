@@ -5,6 +5,6 @@
         string Title,
         string Description,
         double Price,
-        int Duration
+        double Duration
     );
 }

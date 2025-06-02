@@ -26,7 +26,7 @@ namespace AlchemyAPI.Controllers
             _logger.LogInformation("Getting all masters...");
             var masters = await _masterService.GetMasters();
 
-            var response = masters.Select(m => new MasterRepsonse(m.Id, m.Name, m.Expeirence, m.Description));
+            var response = masters.Select(m => new MasterRepsonse(m.Id, m.Name, m.Experience, m.Description));
 
             _logger.LogInformation($"Found {masters.Count} masters");
             return Ok(response);

@@ -25,7 +25,6 @@ namespace Alchemy.Infrastructure
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
             modelBuilder.ApplyConfiguration(new MasterConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
-            //modelBuilder.ApplyConfiguration(new RoleConfiguration());
         }
     }
 }
