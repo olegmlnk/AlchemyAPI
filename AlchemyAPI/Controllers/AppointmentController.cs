@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alchemy.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/")]
     [ApiController]
     [Authorize]
     public class AppointmentController : ControllerBase
@@ -20,16 +20,14 @@ namespace Alchemy.API.Controllers
             _masterScheduleService = masterScheduleService;
         }
 
-        // GET: api/Appointment
-        [HttpGet]
+        [HttpGet("GetAllAppointments")]
         public async Task<IActionResult> GetAppointments()
         {
             var appointments = await _appointmentService.GetAllAppointmentsAsync();
             return Ok(appointments);
         }
 
-        // GET: api/Appointment/5
-        [HttpGet("{id}")]
+        [HttpGet("GetAppointmentById")]
         public async Task<IActionResult> GetAppointmentById(long id)
         {
             var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
@@ -39,8 +37,7 @@ namespace Alchemy.API.Controllers
             return Ok(appointment);
         }
 
-        // POST: api/Appointment
-        [HttpPost]
+        [HttpPost("CreateAppointment")]
         public async Task<IActionResult> CreateAppointment([FromBody] Appointment appointment)
         {
             // Спочатку перевіряємо, чи є доступний слот у MasterSchedule
@@ -61,7 +58,7 @@ namespace Alchemy.API.Controllers
         }
 
         // PUT: api/Appointment/5
-        [HttpPut("{id}")]
+        [HttpPut("UpdateAppointment")]
         public async Task<IActionResult> UpdateAppointment(long id, [FromBody] Appointment appointment)
         {
             if (id != appointment.Id)
@@ -82,7 +79,7 @@ namespace Alchemy.API.Controllers
         }
 
         // DELETE: api/Appointment/5
-        [HttpDelete("{id}")]
+        [HttpDelete("CancelAppointment")]
         public async Task<IActionResult> CancelAppointment(long id)
         {
             var isCancelled = await _appointmentService.CancelAppointmentAsync(id);

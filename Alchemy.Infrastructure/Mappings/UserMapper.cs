@@ -1,5 +1,6 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Infrastructure.Entities;
+
 using AutoMapper;
 
 namespace Alchemy.Infrastructure.Mappings

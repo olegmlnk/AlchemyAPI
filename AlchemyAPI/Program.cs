@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Alchemy.Domain;
 using System.Text;
 using Alchemy.Domain.Models;
+using AlchemyAPI.Mappings;
 
 
 namespace AlchemyAPI
@@ -33,14 +34,13 @@ namespace AlchemyAPI
                 });
             });
 
-            builder.Services.AddAutoMapper(typeof(UserMapper));
+            builder.Services.AddAutoMapper(typeof(UserMapper), typeof(AuthMapping));
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
 
-            builder.Services.Configure<JwtHandler>(builder.Configuration.GetSection("Jwt"));
             builder.Services.AddScoped<JwtHandler>();
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -63,8 +63,7 @@ namespace AlchemyAPI
             })
                 .AddJwtBearer(options =>
                 {
-                    var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtHandler>();
-
+                    
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -98,6 +97,8 @@ namespace AlchemyAPI
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddScoped<JwtHandler>();
 
             var app = builder.Build();
 
