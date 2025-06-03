@@ -4,8 +4,8 @@
     (
         long ScheduleSlotId,
         string Description,
-        long MasterId,
         string UserId,
+        long MasterId,
         long ServiceId
     );
 }

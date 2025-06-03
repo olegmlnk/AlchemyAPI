@@ -1,6 +1,7 @@
 ﻿using Alchemy.Application.Services;
 using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
+using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,35 +39,90 @@ namespace Alchemy.API.Controllers
         }
 
         [HttpPost("CreateAppointment")]
-        public async Task<IActionResult> CreateAppointment([FromBody] Appointment appointment)
+          public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequest request)
         {
-            // Спочатку перевіряємо, чи є доступний слот у MasterSchedule
-            var schedule = await _masterScheduleService.GetByIdAsync(appointment.ScheduleSlotId);
-            if (schedule == null || schedule.IsBooked)
+            if (!ModelState.IsValid) 
+            {
+                return BadRequest(ModelState);
+            }
+
+            var scheduleSlot = await _masterScheduleService.GetByIdAsync(request.ScheduleSlotId);
+            if (scheduleSlot == null)
+            {
+                return BadRequest("Schedule slot not found.");
+            }
+            if (scheduleSlot.IsBooked)
+            {
                 return BadRequest("Slot is not available or already booked.");
+            }
 
-            // Створюємо запис про бронювання
-            var createdAppointmentId = await _appointmentService.CreateAppointmentAsync(appointment);
-            if (createdAppointmentId == null)
-                return BadRequest("Failed to create appointment.");
+            var (appointmentDomainModel, error) = Appointment.Create(
+                request.ScheduleSlotId,
+                request.Description,
+                request.UserId, 
+                request.MasterId,
+                request.ServiceId
+            );
 
-            // Оновлюємо статус слота
-            schedule.IsBooked = true;
-            await _masterScheduleService.MarkSlotAsBookedAsync(schedule.Id);
+            if (!string.IsNullOrEmpty(error))
+            {
+                return BadRequest(error);
+            }
+            if (appointmentDomainModel == null)
+            {
+                 return BadRequest("Failed to create appointment domain model due to validation.");
+            }
 
-            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointmentId }, appointment);
+
+            try
+            {
+                var createdAppointmentId = await _appointmentService.CreateAppointmentAsync(appointmentDomainModel);
+                if (createdAppointmentId == null)
+                {
+                    return BadRequest("Failed to create appointment.");
+                }
+                
+                // Оскільки репозиторій вже оновив MasterSchedule, додатковий виклик тут не потрібен.
+
+                // Створюємо об'єкт для відповіді, якщо потрібно (замість повернення всього appointmentDomainModel)
+                var response = new AppointmentResponse // Або інший відповідний DTO
+                {
+                    Id = createdAppointmentId.Value,
+                    ScheduleSlotId = appointmentDomainModel.ScheduleSlotId,
+                    Description = appointmentDomainModel.Description,
+                    UserId = appointmentDomainModel.UserId,
+                    MasterId = appointmentDomainModel.MasterId,
+                    ServiceId = appointmentDomainModel.ServiceId
+                };
+
+
+                return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointmentId.Value }, response);
+            }
+            catch (KeyNotFoundException knfEx) // Наприклад, якщо сервіс/репозиторій кидає це для залежностей
+            {
+                return NotFound(knfEx.Message);
+            }
+            catch (InvalidOperationException ioEx) // Наприклад, якщо слот став заброньованим паралельно
+            {
+                return Conflict(ioEx.Message); // 409 Conflict
+            }
+            catch (Exception ex)
+            {
+                // Логування помилки ex
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while creating the appointment.");
+            }
         }
 
         // PUT: api/Appointment/5
         [HttpPut("UpdateAppointment")]
-        public async Task<IActionResult> UpdateAppointment(long id, [FromBody] Appointment appointment)
+        public async Task<long> UpdateAppointment(long id, [FromBody] AppointmentRequest appointment)
         {
-            if (id != appointment.Id)
+            if (id != appointment.ScheduleSlotId)
                 return BadRequest("Appointment ID mismatch.");
 
             var updatedAppointmentId = await _appointmentService.UpdateAppointmentAsync(
                 id,
-                appointment.ScheduleSlotId.ToString(),
+                appointment.ScheduleSlotId,
                 appointment.Description,
                 appointment.UserId,
                 appointment.MasterId,
@@ -75,21 +131,22 @@ namespace Alchemy.API.Controllers
             if (updatedAppointmentId == null)
                 return NotFound("Appointment not found");
 
-            return NoContent();
+            return id, appointment;
         }
 
         // DELETE: api/Appointment/5
         [HttpDelete("CancelAppointment")]
         public async Task<IActionResult> CancelAppointment(long id)
         {
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+            if (appointment == null)
+                return NotFound("Appointment not found");
+            
             var isCancelled = await _appointmentService.CancelAppointmentAsync(id);
             if (!isCancelled)
                 return NotFound("Appointment not found");
 
             // Якщо запис було скасовано, звільняємо слот в MasterSchedule
-            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
-            if (appointment == null)
-                return NotFound("Appointment not found");
 
             var schedule = await _masterScheduleService.GetByIdAsync(appointment.ScheduleSlotId);
             if (schedule == null)
