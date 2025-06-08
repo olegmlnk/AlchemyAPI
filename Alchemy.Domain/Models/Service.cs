@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Org.BouncyCastle.Asn1.Cms;
+using Org.BouncyCastle.Security;
 
 namespace Alchemy.Domain.Models
 {
@@ -7,8 +9,10 @@ namespace Alchemy.Domain.Models
         public const int MAX_TITLE_LENGTH = 50;
         public const int MAX_DESCRIPTION_LENGTH = 255;
 
-        private Service()
+        protected Service()
         {
+            Title = String.Empty;
+            Description = string.Empty;
         }
 
         private Service(long id, string title, string description, double price, double duration)
@@ -26,23 +30,58 @@ namespace Alchemy.Domain.Models
         public double Price { get; private set; }
         public double Duration { get; private set; }
 
-        public static Service Create(long id, string title, string description, double price,
+        public static (Service service, string? Error) Create(long id, string title, string description, double price,
             double duration)
         {
-            if (string.IsNullOrEmpty(title) || title.Length > MAX_TITLE_LENGTH)
-            {
-                throw new ValidationException("Title cannot be empty or more that 50 symbols!");
-            }
-            if (string.IsNullOrEmpty(description) || title.Length > MAX_DESCRIPTION_LENGTH)
-            {
-                throw new ValidationException("Description cannot be empty or more that 250 symbols!");
-            }
-            if (price <= 0)
-            {
-                throw new ValidationException("Price cannot be less or equal to zero!");
-            }
+            var errors = new List<string>();
 
-            return new Service(id, title, description, price, duration);
+            if (string.IsNullOrWhiteSpace(title))
+                errors.Add("Title cannot be empty");
+            else if (title.Length > MAX_TITLE_LENGTH)
+                errors.Add($"Title cannot be longer than {MAX_TITLE_LENGTH} symbols");
+
+            if (string.IsNullOrWhiteSpace(description))
+                errors.Add("Description cannot be empty");
+            else if (description.Length > MAX_DESCRIPTION_LENGTH)
+                errors.Add($"Description cannot be longer than {MAX_DESCRIPTION_LENGTH} symbols");
+
+            if (price <= 0)
+                errors.Add("Price cannot be 0 or less.");
+
+            if (errors.Any())
+                return (null, string.Join("; ", errors));
+
+            var service = new Service(id, title, description, price, duration);
+
+            return (service, null);
+        }
+
+        public (bool Success, string? Error) UpdateDetails(string title, string description, double price,
+            double duration)
+        {
+            var errors = new List<string>();
+            
+            if (string.IsNullOrWhiteSpace(title))
+                errors.Add("Title cannot be empty");
+            else if (title.Length > MAX_TITLE_LENGTH)
+                errors.Add($"Title cannot be longer than {MAX_TITLE_LENGTH} symbols");
+
+            if (string.IsNullOrWhiteSpace(description))
+                errors.Add("Description cannot be empty");
+            else if (description.Length > MAX_DESCRIPTION_LENGTH)
+                errors.Add($"Description cannot be longer than {MAX_DESCRIPTION_LENGTH} symbols");
+
+            if (price <= 0)
+                errors.Add("Price cannot be 0 or less.");
+
+            if (errors.Any())
+                return (false, string.Join("; ", errors));
+
+            Title = title;
+            Description = description;
+            Price = price;
+            Duration = duration;
+            return (true, null);
         }
 
     }

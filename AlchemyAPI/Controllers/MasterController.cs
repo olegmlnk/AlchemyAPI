@@ -38,7 +38,7 @@ namespace AlchemyAPI.Controllers
             _logger.LogInformation("Creating a new master...");
 
             var (master, error) = Master.Create(
-                request.Name,
+                request.Name, 
                 request.Expeirence,
                 request.Description,
                 new List<Appointment>());

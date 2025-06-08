@@ -16,25 +16,73 @@
 
         public long Id { get; private set; }
         public long ScheduleSlotId { get; private set; }
-        public  MasterSchedule ScheduleSlot { get;  set; }
-        public string Description { get; private set; } = string.Empty;
+        public virtual MasterSchedule ScheduleSlot { get; private set; } = null!;
+        public string? Description { get; private set; } 
         public string UserId { get; private set; }
-        public  User User { get;  set; }
+        public virtual User User { get; private set; } = null!;
         public long MasterId { get; private set; }
-        public  Master Master { get;  set; }
+        public virtual  Master Master { get; private set; } = null!;
         public long ServiceId { get; private set; }
-        public  Service Service { get;  set; }
+        public virtual  Service Service { get; private set; } = null!;
 
-        public static (Appointment? Appointment, string Error) Create(long scheduleSlotId, string description, string userId, long masterId, long serviceId)
+        public static (Appointment? Appointment, string? Error) Create(long scheduleSlotId, 
+            string description, string userId, long masterId, long serviceId, MasterSchedule scheduleSlot, User user, Master master, Service service
+             )
         {
-            if (string.IsNullOrWhiteSpace(description))
-                return (null, "Description cannot be empty.");
+            var errors = new List<string>();
+
+            if (scheduleSlot == null)
+                errors.Add("Schedule slot cannot be null");
+            else if (scheduleSlot.Id != scheduleSlotId)
+                errors.Add("Provided schedule slotId does not match the schedule slot object.");
+
+            if (user == null)
+                errors.Add("User cannot be null");
+            else if (user.Id != userId)
+                errors.Add("Provided userId does not match the user object.");
+
+            if (master == null)
+                errors.Add("Master cannot be null");
+            else if (master.Id != masterId)
+                errors.Add("Provided masterId does not match the master object.");
+
+            if (service == null)
+                errors.Add("Service cannot be null");
+            else if (service.Id != serviceId)
+                errors.Add("Provided serviceId does not match the service object");
 
             if (description.Length > MAX_DESCRIPTION_LENGTH)
-                return (null, $"Description cannot be longer than {MAX_DESCRIPTION_LENGTH} characters.");
+                errors.Add("Description cannot be longer than 255 symbols");
+            
+            if (string.IsNullOrWhiteSpace(userId)) errors.Add("User ID cannot be empty.");
+            if (masterId <= 0) errors.Add("Invalid Master ID.");
+            if (serviceId <= 0) errors.Add("Invalid Service ID.");
 
-            var appointment = new Appointment(scheduleSlotId, description, userId, masterId, serviceId);
+            if (errors.Count > 0)
+            {
+                return (null, string.Join("; ", errors));
+            }
+
+            var appointment = new Appointment(scheduleSlotId, description, userId, masterId, serviceId)
+            {
+                ScheduleSlot = scheduleSlot,
+                Description = description,
+                User = user,
+                Master = master,
+                Service = service
+            };
             return (appointment, null);
+        }
+
+        public (bool Success, string Description) UpdateDescription(string newDescription)
+        {
+            if (string.IsNullOrWhiteSpace(newDescription))
+                return(false, "Description cannot be empty");
+            if (newDescription.Length > MAX_DESCRIPTION_LENGTH)
+                return (false, $"Description cannot be longer than {MAX_DESCRIPTION_LENGTH} characters.");
+
+            Description = newDescription;
+            return (true, null);
         }
     }
 }

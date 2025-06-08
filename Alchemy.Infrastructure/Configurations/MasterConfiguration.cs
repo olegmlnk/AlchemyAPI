@@ -24,7 +24,7 @@ namespace Alchemy.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(m => m.Expeirence)
-                .HasMaxLength(Master.MAX_EXPEIRENCE_LENGTH)
+                .HasMaxLength(Master.MAX_EXPERIENCE_LENGTH)
                 .IsRequired();
 
             builder.HasMany(m => m.Appointments)

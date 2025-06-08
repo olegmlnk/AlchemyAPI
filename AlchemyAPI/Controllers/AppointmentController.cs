@@ -82,10 +82,7 @@ namespace Alchemy.API.Controllers
                     return BadRequest("Failed to create appointment.");
                 }
                 
-                // Оскільки репозиторій вже оновив MasterSchedule, додатковий виклик тут не потрібен.
-
-                // Створюємо об'єкт для відповіді, якщо потрібно (замість повернення всього appointmentDomainModel)
-                var response = new AppointmentResponse // Або інший відповідний DTO
+                var response = new AppointmentResponse 
                 {
                     Id = createdAppointmentId.Value,
                     ScheduleSlotId = appointmentDomainModel.ScheduleSlotId,
@@ -98,17 +95,16 @@ namespace Alchemy.API.Controllers
 
                 return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointmentId.Value }, response);
             }
-            catch (KeyNotFoundException knfEx) // Наприклад, якщо сервіс/репозиторій кидає це для залежностей
+            catch (KeyNotFoundException knfEx) 
             {
                 return NotFound(knfEx.Message);
             }
-            catch (InvalidOperationException ioEx) // Наприклад, якщо слот став заброньованим паралельно
+            catch (InvalidOperationException ioEx) 
             {
-                return Conflict(ioEx.Message); // 409 Conflict
+                return Conflict(ioEx.Message); 
             }
             catch (Exception ex)
             {
-                // Логування помилки ex
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while creating the appointment.");
             }
         }
@@ -122,7 +118,7 @@ namespace Alchemy.API.Controllers
 
             var updatedAppointmentId = await _appointmentService.UpdateAppointmentAsync(
                 id,
-                appointment.ScheduleSlotId,
+                appointment.ScheduleSlotId.ToString(),
                 appointment.Description,
                 appointment.UserId,
                 appointment.MasterId,
