@@ -9,20 +9,15 @@ namespace Alchemy.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<ServiceEntity> builder)
         {
+            builder.ToTable("Services");
+            
             builder.HasKey(s => s.Id);
-
-            builder.Property(s => s.Id)
-                .ValueGeneratedOnAdd()
-                .IsRequired();
-
-            builder.HasIndex(s => s.Id)
-                .IsUnique();
-
+            
             builder.Property(s => s.Title)
                 .HasMaxLength(Service.MAX_TITLE_LENGTH)
                 .IsRequired();
 
-            builder.HasIndex(builder => builder.Title)
+            builder.HasIndex(s => s.Title)
                 .IsUnique();
 
             builder.Property(s => s.Description)
@@ -30,7 +25,8 @@ namespace Alchemy.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(s => s.Price)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
 
             builder.Property(s => s.Duration)
                 .IsRequired();

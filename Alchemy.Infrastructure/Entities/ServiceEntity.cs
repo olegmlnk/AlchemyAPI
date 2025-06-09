@@ -6,6 +6,6 @@
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; } 
-        public double Duration { get; set; } 
+        public TimeSpan Duration { get; set; } 
     }
 }
