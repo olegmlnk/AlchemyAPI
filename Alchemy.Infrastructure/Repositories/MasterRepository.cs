@@ -1,6 +1,7 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Domain.Repositories;
 using Alchemy.Infrastructure.Entities;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
@@ -8,76 +9,56 @@ namespace Alchemy.Infrastructure.Repositories
     public class MasterRepository : IMasterRepository
     {
         private readonly AlchemyDbContext _context;
+        private readonly IMapper _mapper;
 
-        public MasterRepository(AlchemyDbContext context)
+        public MasterRepository(AlchemyDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<List<Master>> GetMasters()
+        public async Task<List<Master>> GetAllMasters()
         {
-            var masterEntities = await _context.Masters
+            var entities = await _context.Masters
                 .AsNoTracking()
-                .Include(m => m.Appointments) 
                 .ToListAsync();
-
-            var masters = masterEntities
-                .Select(m => Master.Create(
-                    m.Name,
-                    m.Expeirence,
-                    m.Description,
-                    m.Appointments
-                        .Select(a => Appointment.Create(
-                            a.ScheduleSlotId,
-                            a.Description, 
-                            a.UserId,
-                            a.MasterId, 
-                            a.ServiceId).Appointment)
-                        .ToList()
-                ).master)
-                .ToList();
-
-            return masters;
+            return _mapper.Map<List<Master>>(entities);
         }
 
 
-        public async Task<long> GetMasterById(long id)
+        public async Task<Master?> GetMasterById(long id)
         {
-            var master = await _context.Masters.FindAsync(id);
-            if (master == null)
-                throw new KeyNotFoundException("Master not found");
-            return master.Id;
+            var entity = await _context.Masters
+                .AsNoTracking()
+                .Include(m => m.ScheduleSlots)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            return _mapper.Map<Master>(entity);
         }
 
         public async Task<long> CreateMaster(Master master)
         {
-            var masterEntity = new MasterEntity
-            {
-                Id = master.Id,
-                Name = master.Name,
-                Expeirence = master.Experience,
-                Description = master.Description
-            };
-
+            var masterEntity = _mapper.Map<MasterEntity>(master);
             await _context.Masters.AddAsync(masterEntity);
             await _context.SaveChangesAsync();
 
-            return master.Id;
+            return masterEntity.Id;
         }
 
-        public async Task<long> UpdateMaster(long id, string name, string expeirence, string description)
+        public async Task<bool> UpdateMaster(Master master)
         {
-            await _context.Masters.Where(m => m.Id == id)
-                .ExecuteUpdateAsync(x => x
-                .SetProperty(m => m.Name, m => name)
-                .SetProperty(m => m.Expeirence, m => expeirence)
-                .SetProperty(m => m.Description, m => description)
-                );
+            var entityToUpdate = await _context.Masters.FindAsync(master.Id);
 
-            return id;
+            if (entityToUpdate == null)
+                return false;
+
+            _mapper.Map(master, entityToUpdate);
+            _context.Masters.Update(entityToUpdate);
+
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<long> DeleteMaster(long id)
+        public async Task<bool> DeleteMaster(long id)
         {
             var master = await _context.Masters.FindAsync(id);
 
@@ -87,7 +68,7 @@ namespace Alchemy.Infrastructure.Repositories
             _context.Masters.Remove(master);
             await _context.SaveChangesAsync();
 
-            return master.Id;
+            return await _context.SaveChangesAsync() > 0;
         }
 
     }

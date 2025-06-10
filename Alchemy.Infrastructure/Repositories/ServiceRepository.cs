@@ -1,6 +1,7 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Domain.Repositories;
 using Alchemy.Infrastructure.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +11,12 @@ namespace Alchemy.Infrastructure.Repositories
     public class ServiceRepository : IServiceRepository
     {
         private readonly AlchemyDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ServiceRepository(AlchemyDbContext context)
+        public ServiceRepository(AlchemyDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<List<Service>> GetServices()
@@ -21,60 +24,50 @@ namespace Alchemy.Infrastructure.Repositories
             var serviceEntities = await _context.Services
                 .AsNoTracking()
                 .ToListAsync();
-
-            var services = serviceEntities
-                .Select(s => Service.Create(s.Id, s.Title, s.Description, s.Price, s.Duration))
-                .ToList();
-
-            return services;
+            
+            return _mapper.Map<List<Service>>(serviceEntities);
         }
 
-        public async Task<long> GetServiceById(long id)
+        public async Task<Service?> GetServiceById(long id)
         {
-            var service = await _context.Services.FindAsync(id);
-
+            var service = await _context.Services
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id);
+            
             if (service == null)
                 throw new KeyNotFoundException("Service not found");
 
-            return service.Id;
+            return _mapper.Map<Service>(service);
         }
 
         public async Task<long> CreateService(Service service)
         {
-            var serviceEntity = new ServiceEntity
-            {
-                Id = service.Id,
-                Title = service.Title,
-                Description = service.Description,
-                Price = service.Price,
-                Duration = service.Duration
-            };
-
+            var serviceEntity = _mapper.Map<ServiceEntity>(service);
             await _context.Services.AddAsync(serviceEntity);
             await _context.SaveChangesAsync();
-
-            return service.Id;
+            return serviceEntity.Id;
         }
 
-        public async Task<long> UpdateService(long id, string title, string description, double price, double duration)
+        public async Task<bool> UpdateService(Service service)
         {
-            await _context.Services
-                .Where(s => s.Id == id)
-                .ExecuteUpdateAsync(x => x
-                .SetProperty(s => s.Title, s => title)
-                .SetProperty(s => s.Description, s => description)
-                .SetProperty(s => s.Price, s => price)
-                .SetProperty(s => s.Duration, s => duration)
-                );
-            return id;
+            var serviceToUpdate = await _context.Services.FindAsync(service.Id);
+
+            if (serviceToUpdate == null)
+                return false;
+
+            _mapper.Map(service, serviceToUpdate);
+            _context.Services.Update(serviceToUpdate);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<long> DeleteService(long id)
+        public async Task<bool> DeleteService(long id)
         {
-            await _context.Services
-                .Where(s => s.Id == id)
-                .ExecuteDeleteAsync();
-            return id;
+            var serviceToDelete = await _context.Services.FindAsync(id);
+            if (serviceToDelete == null)
+                return false;
+
+            _context.Services.Remove(serviceToDelete);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

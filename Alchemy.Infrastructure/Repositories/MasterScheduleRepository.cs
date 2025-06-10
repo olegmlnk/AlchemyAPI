@@ -1,6 +1,7 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
 using Alchemy.Infrastructure.Entities;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
@@ -8,96 +9,69 @@ namespace Alchemy.Infrastructure.Repositories
     public class MasterScheduleRepository : IMasterScheduleRepository
     {
         private readonly AlchemyDbContext _context;
+        private readonly IMapper _mapper;
 
-        public MasterScheduleRepository(AlchemyDbContext context)
+        public MasterScheduleRepository(AlchemyDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<MasterSchedule?> GetByIdAsync(long id)
+        public async Task<MasterSchedule?> GetMasterScheduleById(long id)
         {
-            var entity = await _context.MasterSchedules.FindAsync(id);
-            return entity == null ? null : MapToDomain(entity);
-        }
+            var entity = await _context.MasterSchedules
+                .AsNoTracking()
+                .Include(ms => ms.Master)
+                .Include(ms => ms.Appointment)
+                .FirstOrDefaultAsync(ms => ms.Id == id);
 
-        public async Task<bool> IsSlotAvailableAsync(long id)
-        {
-            var entity = await _context.MasterSchedules.FindAsync(id);
-            return entity != null && !entity.IsBooked;
-        }
-
-        public async Task MarkSlotAsBookedAsync(long id)
-        {
-            var entity = await _context.MasterSchedules.FindAsync(id);
             if (entity == null)
-                throw new KeyNotFoundException("Schedule slot not found");
+                throw new KeyNotFoundException("Schedule not found.");
 
-            entity.IsBooked = true;
-            _context.MasterSchedules.Update(entity);
-            await _context.SaveChangesAsync();
+            return _mapper.Map<MasterSchedule>(entity);
         }
+        
 
-        public async Task MarkSlotAsAvailableAsync(long id)
-        {
-            var entity = await _context.MasterSchedules.FindAsync(id);
-            if (entity == null)
-                throw new KeyNotFoundException("Schedule slot not found");
-
-            entity.IsBooked = false;
-            _context.MasterSchedules.Update(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<List<MasterSchedule>> GetAllAsync()
+        public async Task<List<MasterSchedule>> GetAllMasterSchedules()
         {
             var entities = await _context.MasterSchedules
                 .AsNoTracking()
+                .Include(ms => ms.Master)
                 .ToListAsync();
 
-            return entities.Select(MapToDomain).ToList();
+            return _mapper.Map<List<MasterSchedule>>(entities);
         }
-
-        public async Task<List<MasterSchedule>> GetByMasterIdAsync(long masterId)
+        public async Task<List<MasterSchedule>> GetMasterScheduleByMasterId(long masterId)
         {
             var entities = await _context.MasterSchedules
+                .AsNoTracking()
                 .Where(ms => ms.MasterId == masterId)
                 .AsNoTracking()
                 .ToListAsync();
 
-            return entities.Select(MapToDomain).ToList();
+            return _mapper.Map<List<MasterSchedule>>(entities);
         }
+        
 
-        private MasterSchedule MapToDomain(MasterScheduleEntity entity)
+        public async Task<bool> UpdateMasterSchedule(MasterSchedule schedule)
         {
-            return new MasterSchedule
-            {
-                Id = entity.Id,
-                MasterId = entity.MasterId,
-                Master = new Master(
-                    entity.Master.Name,
-                    entity.Master.Expeirence,
-                    entity.Master.Description,
-                    entity.Master.Appointments.Select(a => new Appointment
-                    {  }).ToList()
-                ),
-                SlotTime = entity.SlotTime,
-                IsBooked = entity.IsBooked
-            };
-        }
-
-        public async Task<bool> UpdateAsync(MasterSchedule schedule)
-        {
-            var entity = await _context.MasterSchedules.FindAsync(schedule.Id);
-            if (entity == null)
+            var entityToUpdate = await _context.MasterSchedules.FindAsync(schedule.Id);
+            
+            if (entityToUpdate == null)
                 return false;
 
-            entity.IsBooked = schedule.IsBooked;
-            entity.SlotTime = schedule.SlotTime;
-            entity.MasterId = schedule.MasterId;
+            _mapper.Map(schedule, entityToUpdate);
+            _context.MasterSchedules.Update(entityToUpdate);
+            return await _context.SaveChangesAsync() > 0;
+        }
 
-            _context.MasterSchedules.Update(entity);
-            var result = await _context.SaveChangesAsync();
-            return result > 0;
+        public async Task<long> CreateMasterSchedule(MasterSchedule schedule)
+        {
+            var entityToCreate = _mapper.Map<MasterScheduleEntity>(schedule);
+
+            await _context.MasterSchedules.AddAsync(entityToCreate);
+            await _context.SaveChangesAsync();
+            return entityToCreate.Id;
         }
     }
 }

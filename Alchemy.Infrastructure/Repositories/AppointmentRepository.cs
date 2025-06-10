@@ -1,57 +1,57 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
 using Alchemy.Infrastructure.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using ZstdSharp.Unsafe;
 
 namespace Alchemy.Infrastructure.Repositories
 {
     public class AppointmentRepository : IAppointmentRepository
     {
         private readonly AlchemyDbContext _context;
+        private readonly IMapper _mapper;
 
-        public AppointmentRepository(AlchemyDbContext context)
+        public AppointmentRepository(AlchemyDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<List<Appointment>> GetAllAppointmentsAsync()
+        public async Task<List<Appointment>> GetAllAppointments()
         {
             var appointmentEntities = await _context.Appointments
                 .AsNoTracking()
+                .Include(a => a.ScheduleSlot)
+                .Include(a => a.Master)
+                .Include(a => a.User)
+                .Include(a => a.Service)
                 .ToListAsync();
 
-            var appointments = appointmentEntities
-                .Select(a => Appointment.Create(
-                    a.ScheduleSlotId,
-                    a.Description,
-                    a.UserId,
-                    a.MasterId,
-                    a.ServiceId).Appointment).ToList();
-
-            return appointments;
+            return _mapper.Map<List<Appointment>>(appointmentEntities);
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<Appointment> GetAppointmentByIdAsync(long id)
+        public async Task<Appointment> GetAppointmentById(long id)
         {
-            var appointmentEntity = await _context.Appointments.FindAsync(id);
+            var appointmentEntity = await _context.Appointments
+                .AsNoTracking()
+                .Include(a => a.User)
+                .Include(a => a.Master)
+                .Include(a => a.Service)
+                .Include(a => a.ScheduleSlot)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
             if (appointmentEntity == null)
                 throw new KeyNotFoundException("Appointment not found");
+            
 
-            var appointment = Appointment.Create(
-                appointmentEntity.ScheduleSlotId,
-                appointmentEntity.Description,
-                appointmentEntity.UserId,
-                appointmentEntity.MasterId,
-                appointmentEntity.ServiceId).Appointment;
-
-            return appointment;
+            return _mapper.Map<Appointment>(appointmentEntity);
         }
 
-        [Authorize(Roles = "Admin")]
-        public async Task<List<Appointment>> GetAppointmentByMasterIdAsync(long masterId)
+        /*[Authorize(Roles = "Admin")]
+        public async Task<List<Appointment>> GetAppointmentByMasterId(long masterId)
         {
             var appointmentEntity = await _context.Appointments
                 .Where(a => a.MasterId == masterId)
@@ -67,90 +67,72 @@ namespace Alchemy.Infrastructure.Repositories
                     a.ServiceId).Appointment).ToList();
 
             return apointments;
-        }
+        }*/
 
         [Authorize(Roles = "Admin")]
-        public async Task<List<Appointment>> GetAppointmentByUserIdAsync(string userId)
+        public async Task<List<Appointment>> GetAppointmentByUserId(string userId)
         {
-            var appointmentEntity = await _context.Appointments
-                 .Where(a => a.UserId == userId)
-                 .AsNoTracking()
-                 .ToListAsync();
+            var appointmentEntities = await _context.Appointments
+                .AsNoTracking()
+                .Where(a => a.UserId == userId)
+                .Include(a => a.ScheduleSlot)
+                .Include(a => a.Master)
+                .Include(a => a.Service)
+                .ToListAsync();
 
-            var apointments = appointmentEntity
-                .Select(a => Appointment.Create(
-                    a.ScheduleSlotId,
-                    a.Description,
-                    a.UserId,
-                    a.MasterId,
-                    a.ServiceId).Appointment)
-                .ToList();
+            if (appointmentEntities == null)
+                throw new KeyNotFoundException("No appointments found.");
 
-            return apointments;
+            return _mapper.Map<List<Appointment>>(appointmentEntities);
         }
 
-        public async Task<long?> CreateAppointmentAsync(Appointment appointment)
+        public async Task<long> CreateAppointment(Appointment appointment)
         {
-            var scheduleSlot = await _context.MasterSchedules
-                .FirstOrDefaultAsync(s => s.Id == appointment.ScheduleSlotId);
+            var appointmentEntity = _mapper.Map<AppointmentEntity>(appointment);
 
-            if (scheduleSlot == null)
-                throw new KeyNotFoundException("Schedule slot not found");
+            var scheduleSlotEntity = await _context.MasterSchedules.FindAsync(appointment.ScheduleSlotId);
 
-            if (scheduleSlot.IsBooked)
-                throw new InvalidOperationException("Schedule slot is already booked");
+            if (scheduleSlotEntity == null)
+                throw new KeyNotFoundException("Associated schedule slot not found.");
 
-            scheduleSlot.IsBooked = true;
-            _context.MasterSchedules.Update(scheduleSlot);
+            if (scheduleSlotEntity.IsBooked)
+                throw new InvalidOperationException("Schedule slot is already booked.");
 
-            var appointmentEntity = new AppointmentEntity
-            {
-                ScheduleSlotId = appointment.ScheduleSlotId,
-                Description = appointment.Description,
-                UserId = appointment.UserId,
-                MasterId = appointment.MasterId,
-                ServiceId = appointment.ServiceId,
-            };
+            scheduleSlotEntity.IsBooked = true;
 
             await _context.Appointments.AddAsync(appointmentEntity);
-
             await _context.SaveChangesAsync();
 
             return appointmentEntity.Id;
         }
 
-        public async Task<long?> UpdateAppointmentAsync(long id, string scheduleSlotId, string description, string userId, long masterId,long  serviceId)
+        public async Task<bool> UpdateAppointment(Appointment appointment)
         {
-            var appointmentEntity = await _context.Appointments.FindAsync(id);
+            var appointmentToUpdate = await _context.Appointments.FindAsync(appointment.Id);
 
-            if (appointmentEntity == null)
-                throw new KeyNotFoundException("Appointment not found");
+            if (appointmentToUpdate == null)
+                return false;
 
-            appointmentEntity.ScheduleSlotId = long.Parse(scheduleSlotId);
-            appointmentEntity.Description = description;
-            appointmentEntity.UserId = userId;
-            appointmentEntity.MasterId = masterId;
-            appointmentEntity.ServiceId = serviceId;
+            _mapper.Map(appointment, appointmentToUpdate);
 
-            _context.Appointments.Update(appointmentEntity);
-
-            var result = await _context.SaveChangesAsync();
-
-            return result > 0 ? appointmentEntity.Id : null;
+            _context.Appointments.Update(appointmentToUpdate);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> CancelAppointmentAsync(long appointmentId)
+        public async Task<bool> DeleteAppointment(long Id)
         {
-            var appointmentEntity = await _context.Appointments.FindAsync(appointmentId);
+            var appointmentToDelete = await _context.Appointments
+                .Include(a => a.ScheduleSlot)
+                .FirstOrDefaultAsync(a => a.Id == Id);
 
-            if (appointmentEntity == null)
-                throw new KeyNotFoundException("Appointment not found");
+            if (appointmentToDelete == null)
+                return false;
 
-            _context.Appointments.Remove(appointmentEntity);
-            var result = await _context.SaveChangesAsync();
+            if (appointmentToDelete.ScheduleSlot != null)
+                appointmentToDelete.ScheduleSlot.IsBooked = false;
 
-            return result > 0;
+            _context.Appointments.Remove(appointmentToDelete);
+            return await _context.SaveChangesAsync() > 0;
         }
-
     }
 }

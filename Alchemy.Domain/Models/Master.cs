@@ -9,7 +9,7 @@
         protected Master()
         {
             Name = string.Empty;
-            Description = String.Empty;
+            Description = string.Empty;
             Experience = string.Empty;
         }
         private Master(string name, string experience, string description)
