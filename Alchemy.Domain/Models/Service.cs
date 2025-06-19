@@ -15,9 +15,8 @@ namespace Alchemy.Domain.Models
             Description = string.Empty;
         }
 
-        private Service(long id, string title, string description, double price, TimeSpan duration)
+        private Service(string title, string description, double price, TimeSpan duration)
         {
-            Id = id;
             Title = title;
             Description = description;
             Price = price;
@@ -30,7 +29,7 @@ namespace Alchemy.Domain.Models
         public double Price { get; private set; }
         public TimeSpan Duration { get; private set; }
 
-        public static (Service service, string? Error) Create(long id, string title, string description, double price,
+        public static (Service service, string? Error) Create( string title, string description, double price,
             TimeSpan duration)
         {
             var errors = new List<string>();
@@ -51,7 +50,7 @@ namespace Alchemy.Domain.Models
             if (errors.Any())
                 return (null, string.Join("; ", errors));
 
-            var service = new Service(id, title, description, price, duration);
+            var service = new Service(title, description, price, duration);
 
             return (service, null);
         }

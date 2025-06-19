@@ -1,6 +1,6 @@
 ﻿using Alchemy.Domain.Models;
 
-namespace Alchemy.Domain.Repositories
+namespace Alchemy.Domain.Interfaces
 {
     public interface IMasterRepository
     {

@@ -1,14 +1,13 @@
 ﻿using Alchemy.Domain.Models;
 
-namespace Alchemy.Application.Services
+namespace Alchemy.Domain.Interfaces
 {
     public interface IMasterScheduleService
     {
-        Task<List<MasterSchedule>> GetAllAsync();
         Task<MasterSchedule?> GetByIdAsync(long id);
         Task<List<MasterSchedule>> GetByMasterIdAsync(long masterId);
-        Task<bool> IsSlotAvailableAsync(long id);
-        Task MarkSlotAsBookedAsync(long id);
-        Task MarkSlotAsAvailableAsync(long id);
+        Task<(long? ScheduleId, string? Error)> CreateSlot(long masterId, DateTime slotTime);
+        Task<(bool Success, string? Error)> MarkSlotAsBooked(long id);
+        Task<(bool Success, string? Error)> MarkSlotAsAvailable(long id);
     }
 }

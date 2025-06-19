@@ -5,6 +5,6 @@
         string Title,
         string Description,
         double Price,
-        double Duration
+        double DurationInMinutes
     );
 }

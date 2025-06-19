@@ -9,6 +9,5 @@ namespace Alchemy.Domain.Interfaces
         Task<List<MasterSchedule>> GetMasterScheduleByMasterId(long masterId);
         Task<long> CreateMasterSchedule(MasterSchedule schedule);
         Task<bool> UpdateMasterSchedule(MasterSchedule schedule);
-
     }
 }

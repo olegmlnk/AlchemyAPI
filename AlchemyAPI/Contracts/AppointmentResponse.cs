@@ -1,12 +1,12 @@
 ﻿namespace AlchemyAPI.Contracts
 {
-    public class AppointmentResponse
-    {
-        public long Id { get; init; }
-        public long ScheduleSlotId { get; init; } 
-        public string? Description { get; init; }
-        public string UserId { get; init; }
-        public long MasterId { get; init; }
-        public long ServiceId { get; init; }
-    }
+    public record AppointmentResponse
+    (
+       long Id,
+       long ScheduleSlotId,
+       string? Description,
+       string UserId,
+       long MasterId,
+       long ServiceId
+    );
 }

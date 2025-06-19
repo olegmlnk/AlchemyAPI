@@ -1,4 +1,4 @@
-﻿namespace Alchemy.Domain
+﻿namespace Alchemy.Domain.Interfaces
 {
     public interface IPasswordHasher
     {

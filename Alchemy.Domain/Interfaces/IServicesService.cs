@@ -4,10 +4,10 @@ namespace Alchemy.Domain.Interfaces
 {
     public interface IServicesService
     {
-        Task<long> CreateService(Service service);
-        Task<long> DeleteService(long id);
-        Task<long> GetServiceById(long id);
+        Task<Service?> GetServiceById(long id);
         Task<List<Service>> GetServices();
-        Task<long> UpdateService(long id, string title, string description, double price, double duration);
+        Task<(long? ServiceId, string? Error)> CreateService(string title, string description, double price, TimeSpan duration);
+        Task<(bool Success, string? Error)> UpdateService(long id, string title, string description, double price, TimeSpan duration);
+        Task<bool> DeleteService(long id);
     }
 }

@@ -4,13 +4,10 @@ using Alchemy.Infrastructure;
 using Alchemy.Domain.Interfaces;
 using Alchemy.Application.Services;
 using Alchemy.Infrastructure.Repositories;
-using Alchemy.Domain.Repositories;
-using Alchemy.Domain.Services;
 using Microsoft.AspNetCore.Identity;
 using Alchemy.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Alchemy.Domain;
 using System.Text;
 using Alchemy.Domain.Models;
 using AlchemyAPI.Mappings;
@@ -50,6 +47,7 @@ namespace AlchemyAPI
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireDigit = true;
+                options.User.RequireUniqueEmail = true;
             })
      .AddEntityFrameworkStores<AlchemyDbContext>()
      .AddDefaultTokenProviders();
@@ -63,7 +61,8 @@ namespace AlchemyAPI
             })
                 .AddJwtBearer(options =>
                 {
-                    
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -73,14 +72,15 @@ namespace AlchemyAPI
                         ValidIssuer = builder.Configuration["Jwt:Issuer"],
                         ValidAudience = builder.Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-                        (builder.Configuration["Jwt:SecretKey"]!))
+                        (builder.Configuration["Jwt:SecretKey"]!)),
+                        ClockSkew = TimeSpan.Zero // removing the time error for instant expiration of a token
                     };
                 });
             
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("ClientPolicy", policy => policy.RequireRole("User"));
+                options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
             });
 
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
@@ -98,7 +98,7 @@ namespace AlchemyAPI
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
 
-            builder.Services.AddScoped<JwtHandler>();
+            builder.Services.AddScoped<IJwtTokenGenerator, JwtHandler>();
 
             var app = builder.Build();
 

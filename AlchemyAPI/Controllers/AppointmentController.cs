@@ -1,157 +1,184 @@
-﻿using Alchemy.Application.Services;
+﻿using System.Security.Claims;
 using Alchemy.Domain.Interfaces;
-using Alchemy.Domain.Models;
 using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Alchemy.API.Controllers
+namespace AlchemyAPI.Controllers
 {
-    [Route("api/")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
-        private readonly IMasterScheduleService _masterScheduleService;
+        private readonly ILogger _logger;
 
-        public AppointmentController(IAppointmentService appointmentService, IMasterScheduleService masterScheduleService)
+        public AppointmentController(IAppointmentService appointmentService, ILogger logger)
         {
             _appointmentService = appointmentService;
-            _masterScheduleService = masterScheduleService;
+            _logger = logger;
         }
 
         [HttpGet("GetAllAppointments")]
         public async Task<IActionResult> GetAppointments()
         {
-            var appointments = await _appointmentService.GetAllAppointmentsAsync();
-            return Ok(appointments);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (User.IsInRole("Admin"))
+            {
+                var allAppointments = await _appointmentService.GetAllAppointments();
+                var adminResponse = allAppointments.Select(a => new AppointmentResponse(
+                    a.Id, a.ScheduleSlotId, a.Description, a.UserId, a.MasterId, a.ServiceId));
+                return Ok(adminResponse);
+            }
+
+            var userAppointments = await _appointmentService.GetAppointmentsByUserId(currentUserId);
+            var userResponse = userAppointments.Select(a => new AppointmentResponse(
+                a.Id, a.ScheduleSlotId, a.Description, a.UserId, a.MasterId, a.ServiceId));
+
+            return Ok(userResponse);
         }
 
         [HttpGet("GetAppointmentById")]
         public async Task<IActionResult> GetAppointmentById(long id)
         {
-            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+            var appointment = await _appointmentService.GetAppointmentById(id);
+
             if (appointment == null)
-                return NotFound("Appointment not found");
+                return NotFound();
 
-            return Ok(appointment);
-        }
-
-        [HttpPost("CreateAppointment")]
-          public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequest request)
-        {
-            if (!ModelState.IsValid) 
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (appointment.UserId != currentUserId && !User.IsInRole("Admin"))
             {
-                return BadRequest(ModelState);
+                _logger.LogWarning(
+                    $"User {currentUserId} attempted to access appointment {appointment} without permission.",
+                    currentUserId, id);
+                return Forbid();
             }
 
-            var scheduleSlot = await _masterScheduleService.GetByIdAsync(request.ScheduleSlotId);
-            if (scheduleSlot == null)
-            {
-                return BadRequest("Schedule slot not found.");
-            }
-            if (scheduleSlot.IsBooked)
-            {
-                return BadRequest("Slot is not available or already booked.");
-            }
-
-            var (appointmentDomainModel, error) = Appointment.Create(
-                request.ScheduleSlotId,
-                request.Description,
-                request.UserId, 
-                request.MasterId,
-                request.ServiceId
-            );
-
-            if (!string.IsNullOrEmpty(error))
-            {
-                return BadRequest(error);
-            }
-            if (appointmentDomainModel == null)
-            {
-                 return BadRequest("Failed to create appointment domain model due to validation.");
-            }
-
-
-            try
-            {
-                var createdAppointmentId = await _appointmentService.CreateAppointmentAsync(appointmentDomainModel);
-                if (createdAppointmentId == null)
-                {
-                    return BadRequest("Failed to create appointment.");
-                }
-                
-                var response = new AppointmentResponse 
-                {
-                    Id = createdAppointmentId.Value,
-                    ScheduleSlotId = appointmentDomainModel.ScheduleSlotId,
-                    Description = appointmentDomainModel.Description,
-                    UserId = appointmentDomainModel.UserId,
-                    MasterId = appointmentDomainModel.MasterId,
-                    ServiceId = appointmentDomainModel.ServiceId
-                };
-
-
-                return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointmentId.Value }, response);
-            }
-            catch (KeyNotFoundException knfEx) 
-            {
-                return NotFound(knfEx.Message);
-            }
-            catch (InvalidOperationException ioEx) 
-            {
-                return Conflict(ioEx.Message); 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while creating the appointment.");
-            }
-        }
-
-        // PUT: api/Appointment/5
-        [HttpPut("UpdateAppointment")]
-        public async Task<long> UpdateAppointment(long id, [FromBody] AppointmentRequest appointment)
-        {
-            if (id != appointment.ScheduleSlotId)
-                return BadRequest("Appointment ID mismatch.");
-
-            var updatedAppointmentId = await _appointmentService.UpdateAppointmentAsync(
-                id,
-                appointment.ScheduleSlotId.ToString(),
+            var response = new AppointmentResponse(
+                appointment.Id,
+                appointment.ScheduleSlotId,
                 appointment.Description,
                 appointment.UserId,
                 appointment.MasterId,
-                appointment.ServiceId
-            );
-            if (updatedAppointmentId == null)
-                return NotFound("Appointment not found");
+                appointment.ServiceId);
 
-            return id, appointment;
+            return Ok(response);
         }
 
-        // DELETE: api/Appointment/5
-        [HttpDelete("CancelAppointment")]
+        [HttpGet("GetByUserId")]
+        public async Task<IActionResult> GetAppointmentsByUserId(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("GetByMasterId")]
+        public async Task<IActionResult> GetAppointmentsByMasterId(long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost("CreateAppointment")]
+        public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized("User not found.");
+
+            var (createdAppointmentId, creationError) = await _appointmentService.CreateAppointment(
+                request.ScheduleSlotId,
+                request.Description,
+                request.MasterId,
+                request.ServiceId,
+                currentUserId);
+
+            if (creationError != null)
+            {
+                if (creationError.Contains("not found")) return NotFound(new { Error = creationError });
+                if (creationError.Contains("booked") || creationError.Contains("in advance"))
+                    return Conflict(new { Error = creationError });
+                return BadRequest(new { Error = creationError });
+            }
+
+            var response = new AppointmentResponse(
+                createdAppointmentId!.Value,
+                request.ScheduleSlotId,
+                request.Description,
+                currentUserId,
+                request.MasterId,
+                request.ServiceId);
+
+            return CreatedAtAction(nameof(GetAppointmentById), new { id = createdAppointmentId.Value }, response);
+        }
+
+        [HttpPut("UpdateAppointment")]
+        public async Task<IActionResult> UpdateAppointment(long id, [FromBody] AppointmentRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(currentUserId))
+                return Unauthorized();
+
+            var (success, error) = await _appointmentService.UpdateAppointment(
+                id,
+                request.Description,
+                currentUserId);
+
+            if (!success)
+            {
+                if (error != null && error.Contains("not found"))
+                {
+                    return NotFound(new { Error = error });
+                }
+
+                if (error != null && error.Contains("permission"))
+                {
+                    _logger.LogWarning($"Forbidden attempt: User {currentUserId} tried to update appointment {id}");
+                    return Forbid();
+                }
+
+                return BadRequest(new { Error = error ?? "Failed to update the appointment" });
+            }
+                _logger.LogInformation($"Appointment {id} was updated by User {currentUserId}");
+                return NoContent();
+        }
+    
+
+    [HttpDelete("CancelAppointment")]
         public async Task<IActionResult> CancelAppointment(long id)
         {
-            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+            var appointment = await _appointmentService.GetAppointmentById(id);
+
             if (appointment == null)
-                return NotFound("Appointment not found");
-            
-            var isCancelled = await _appointmentService.CancelAppointmentAsync(id);
-            if (!isCancelled)
-                return NotFound("Appointment not found");
+                return NotFound(new { Error = "Appointment not found." });
 
-            // Якщо запис було скасовано, звільняємо слот в MasterSchedule
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isUserAdmin = User.IsInRole("Admin");
 
-            var schedule = await _masterScheduleService.GetByIdAsync(appointment.ScheduleSlotId);
-            if (schedule == null)
-                return NotFound("Schedule slot not found");
+            if (appointment.UserId != currentUserId && !isUserAdmin)
+            {
+                _logger.LogWarning(
+                    $"Forbidden access attempt: User {currentUserId} tried to cancel appointment {id} owned by {appointment.UserId}");
+                return Forbid();
+            }
 
-            schedule.IsBooked = false;
-            await _masterScheduleService.MarkSlotAsAvailableAsync(schedule.Id);
+            var (success, error) = await _appointmentService.CancelAppointment(id, currentUserId, isUserAdmin);
+
+            if (!success)
+                return BadRequest(new { Error = error ?? "Failed to cancel the appointment" });
+
+            _logger.LogInformation($"Appointment {id} was successfully canceled by User {currentUserId}");
 
             return NoContent();
         }
+
     }
 }

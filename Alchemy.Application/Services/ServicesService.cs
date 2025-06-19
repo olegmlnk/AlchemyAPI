@@ -1,6 +1,5 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
-using Alchemy.Domain.Repositories;
 
 namespace Alchemy.Application.Services
 {
@@ -13,30 +12,47 @@ namespace Alchemy.Application.Services
             _serviceRepository = serviceRepository;
         }
 
-        public async Task<List<Service>> GetServices()
+
+        public Task<Service?> GetServiceById(long id)
         {
-            return await _serviceRepository.GetServices();
+            return _serviceRepository.GetServiceById(id);
         }
 
-        public async Task<long> GetServiceById(long id)
+        public Task<List<Service>> GetServices()
         {
-            return await _serviceRepository.GetServiceById(id);
+            return _serviceRepository.GetServices();
         }
 
-        public async Task<long> CreateService(Service service)
+        public async Task<(long? ServiceId, string? Error)> CreateService(string title, string description, double price, TimeSpan duration)
         {
-            return await _serviceRepository.CreateService(service);
+            var (service, error) = Service.Create(title, description, price, duration);
+
+            if (error != null)
+                return (null, error);
+
+            var createdId = await _serviceRepository.CreateService(service);
+            return (createdId, null);
         }
 
-        public async Task<long> UpdateService(long id, string title, string description, double price, double duration)
+        public async Task<(bool Success, string? Error)> UpdateService(long id, string title, string description, double price, TimeSpan duration)
         {
-            return await _serviceRepository.UpdateService(id, title, description, price, duration);
+            var service = await _serviceRepository.GetServiceById(id);
+
+            if (service == null)
+                return (false, "Service not found!");
+
+            var (isUpdateSuccessful, error) = service.UpdateDetails(title, description, price, duration);
+
+            if (!isUpdateSuccessful)
+                return (false, error);
+
+            var success = await _serviceRepository.UpdateService(service);
+            return (success, success ? null : "Service hasn't been updated.");
         }
 
-        public async Task<long> DeleteService(long id)
+        public Task<bool> DeleteService(long id)
         {
-            return await _serviceRepository.DeleteService(id);
+            return _serviceRepository.DeleteService(id);
         }
-
     }
 }

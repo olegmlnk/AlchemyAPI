@@ -5,7 +5,7 @@ namespace AlchemyAPI.Contracts
     public record MasterRequest
     (
         string Name,
-        string Expeirence,
+        string Experience,
         string Description
     );
 }

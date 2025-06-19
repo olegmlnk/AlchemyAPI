@@ -1,5 +1,5 @@
 ﻿using Alchemy.Domain.Models;
-using Alchemy.Domain.Repositories;
+using Alchemy.Domain.Interfaces;
 using Alchemy.Infrastructure.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;

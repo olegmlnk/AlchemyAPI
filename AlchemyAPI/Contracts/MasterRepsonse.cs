@@ -6,7 +6,7 @@ namespace AlchemyAPI.Contracts
     (
         long Id,
         string Name,
-        string Expeirence,
+        string Experience,
         string Description
     );
 }

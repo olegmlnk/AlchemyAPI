@@ -6,60 +6,78 @@ namespace Alchemy.Application.Services
     public class MasterScheduleService : IMasterScheduleService
     {
         private readonly IMasterScheduleRepository _repository;
+        private readonly IMasterRepository _masterRepository;
 
-        public MasterScheduleService(IMasterScheduleRepository repository)
+        public MasterScheduleService(IMasterScheduleRepository repository, IMasterRepository masterRepository)
         {
             _repository = repository;
+            _masterRepository = masterRepository;
         }
 
-        public async Task<List<MasterSchedule>> GetAllAsync()
+
+        public Task<MasterSchedule?> GetByIdAsync(long id)
         {
-            return await _repository.GetAllAsync();
+            return _repository.GetMasterScheduleById(id);
         }
 
-        public async Task<MasterSchedule?> GetByIdAsync(long id)
+        public Task<List<MasterSchedule>> GetByMasterIdAsync(long masterId)
         {
-            return await _repository.GetByIdAsync(id);
+            return _repository.GetMasterScheduleByMasterId(masterId);
         }
 
-        public async Task<List<MasterSchedule>> GetByMasterIdAsync(long masterId)
+        public async Task<(long? ScheduleId, string? Error)> CreateSlot(long masterId, DateTime slotTime)
         {
-            return await _repository.GetByMasterIdAsync(masterId);
+            var master = await _masterRepository.GetMasterById(masterId);
+            
+            if (master == null)
+                return (null, "Master not found.");
+
+            var (schedule, error) = MasterSchedule.Create(masterId, slotTime, master);
+
+            if (error != null)
+                return (null, error);
+
+            var createdId = await _repository.CreateMasterSchedule(schedule!);
+            return (createdId, null);
         }
 
-        public async Task<bool> IsSlotAvailableAsync(long id)
+        public async Task<(bool Success, string? Error)> MarkSlotAsBooked(long id)
         {
-            var slot = await _repository.GetByIdAsync(id);
-            if (slot == null)
-                throw new KeyNotFoundException("Schedule slot not found.");
+            var schedule = await _repository.GetMasterScheduleById(id);
 
-            return !slot.IsBooked;
+            if (schedule == null)
+                return (false, "Slot not found.");
+
+            var (isSuccess, error) = schedule.TryBook(null!);
+
+            if (!isSuccess)
+                return (false, null);
+
+            var wasUpdated = await _repository.UpdateMasterSchedule(schedule);
+
+            if (!wasUpdated)
+                return (false, "Failed to update slot status");
+
+            return (true, null);
         }
 
-        public async Task MarkSlotAsBookedAsync(long id)
+        public async Task<(bool Success, string? Error)> MarkSlotAsAvailable(long id)
         {
-            var slot = await _repository.GetByIdAsync(id);
-            if (slot == null)
-                throw new KeyNotFoundException("Schedule slot not found.");
+            var schedule = await _repository.GetMasterScheduleById(id);
 
-            if (slot.IsBooked)
-                throw new InvalidOperationException("Slot already booked.");
+            if (schedule == null)
+                return (false, "Slot not found.");
 
-            slot.MarkAsBooked();
-            await _repository.UpdateAsync(slot);
-        }
+            if (!schedule.IsBooked)
+                return (false, "Slot is already available.");
 
-        public async Task MarkSlotAsAvailableAsync(long id)
-        {
-            var slot = await _repository.GetByIdAsync(id);
-            if (slot == null)
-                throw new KeyNotFoundException("Schedule slot not found.");
+            schedule.TryFreeSlot();
+            var wasUpdated = await _repository.UpdateMasterSchedule(schedule);
 
-            if (!slot.IsBooked)
-                throw new InvalidOperationException("Slot already available.");
+            if (!wasUpdated)
+                return (false, "Failed to update slot status.");
 
-            slot.MarkAsAvailable();
-            await _repository.UpdateAsync(slot);
+            return (true, null);
         }
     }
 }

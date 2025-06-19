@@ -4,51 +4,48 @@ using Alchemy.Domain.Models;
 using Alchemy.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace Alchemy.Application.Services
 {
-    public class UserService : IUserService 
+    public class UserService : IUserService
     {
-        private readonly JwtHandler _jwtHandler;
         private readonly UserManager<User> _userManager;
-        public UserService(JwtHandler jwtHandler, UserManager<User> userManager)
+        private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        private const string DefaultUserRole = "User";
+
+        public UserService(UserManager<User> userManager, IJwtTokenGenerator jwtTokenGenerator)
         {
-            _jwtHandler = jwtHandler;
-            _userManager = userManager;
+            _userManager = _userManager;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<(bool Success, IEnumerable<string> Errors)> Register(string username, string email, string password)
+
+        public async Task<(bool Success, IEnumerable<string> Errors)> Register(string username, string email, string password, string firstName, string lastName)
         {
-            var user = new User
-            {
-                UserName = username,
-                Email = email
-            };
+            var (user, error) = User.Create(username, email, firstName, lastName);
 
-            var result = await _userManager.CreateAsync(user, password); 
+            if (error != null)
+                return (false, new[] { error });
 
-            if(!result.Succeeded)
-            {
+            var result = await _userManager.CreateAsync(user!, password);
+
+            if (!result.Succeeded)
                 return (false, result.Errors.Select(e => e.Description));
-            }
 
-            await _userManager.AddToRoleAsync(user, "Client");
-            return (true, null);
+            await _userManager.AddToRoleAsync(user!, DefaultUserRole);
+
+            return (true, Enumerable.Empty<string>());
         }
 
-
-        public async Task<(string Token, string Error)> Login(string username, string password)
+        public async Task<(string? Token, string? Error)> Login(string email, string password)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByEmailAsync(email);
 
-            if(user == null || !await _userManager.CheckPasswordAsync(user, password))
-            {
-                return (null, "Check your email or password");
-            }
+            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+                return (null, "Invalid email or password");
 
-            var roles = await _userManager.GetRolesAsync(user);
-            var token = await _jwtHandler.GenerateToken(user);
-
+            var token = await _jwtTokenGenerator.GenerateToken(user);
             return (token, null);
         }
     }

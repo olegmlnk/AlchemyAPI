@@ -1,13 +1,11 @@
 ﻿using Alchemy.Domain.Models;
-using Alchemy.Domain.Repositories;
+using Alchemy.Domain.Interfaces;
 using Alchemy.Infrastructure.Entities;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
 {
-    [Authorize(Roles = "Admin")]
     public class ServiceRepository : IServiceRepository
     {
         private readonly AlchemyDbContext _context;

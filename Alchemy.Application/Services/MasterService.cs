@@ -1,7 +1,5 @@
 ﻿using Alchemy.Domain.Models;
-using Alchemy.Domain.Repositories;
-using Alchemy.Domain.Services;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Alchemy.Domain.Interfaces;
 
 namespace Alchemy.Application.Services
 {
@@ -14,29 +12,45 @@ namespace Alchemy.Application.Services
             _masterRepository = masterRepository;
         }
 
-        public async Task<List<Master>> GetMasters()
+        public Task<Master?> GetMasterById(long id)
         {
-            return await _masterRepository.GetMasters();
+            return _masterRepository.GetMasterById(id);
         }
 
-        public async Task<long> GetMasterById(long id)
+        public Task<List<Master>> GetAllMasters()
         {
-            return await _masterRepository.GetMasterById(id);
+            return _masterRepository.GetAllMasters();
         }
 
-        public async Task<long> CreateMaster(Master master)
+        public async Task<(long? MasterId, string? Error)> CreateMaster(string name, string experience, string description)
         {
-            return await _masterRepository.CreateMaster(master);
+            var (master, error) = Master.Create(name, experience, description);
+
+            if (error != null)
+                return (null, error);
+
+            var createdId = await _masterRepository.CreateMaster(master!);
+            return (createdId, null);
         }
 
-        public async Task<long> UpdateMaster(long id, string name, string expeirence, string description)
+        public async Task<(bool Success, string? Error)> UpdateMaster(long id, string name, string experience, string description)
         {
-            return await _masterRepository.UpdateMaster(id, name, expeirence, description);
+            var master = await _masterRepository.GetMasterById(id);
+            if (master == null) 
+                return (false, "Master not found!");
+
+            var (isUpdateSuccessful, error) = master.UpdateDetails(name, experience, description);
+
+            if (!isUpdateSuccessful)
+                return (false, error);
+
+            var success = await _masterRepository.UpdateMaster(master);
+            return (success, success ? null : "Master hasn't been updated.");
         }
 
-        public async Task<long> DeleteMaster(long id)
+        public Task<bool> DeleteMaster(long id)
         {
-            return await _masterRepository.DeleteMaster(id);
+            return _masterRepository.DeleteMaster(id);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Alchemy.Domain.Interfaces;
-using Alchemy.Domain.Models;
-using Alchemy.Domain.Services;
 using AlchemyAPI.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlchemyAPI.Controllers
@@ -17,59 +16,96 @@ namespace AlchemyAPI.Controllers
             _servicesService = servicesService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<ServiceResponse>>> GetServices()
+        [HttpGet("GetServices")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetServices()
         {
             var services = await _servicesService.GetServices();
 
-            var response = services.Select(s => new
-            {
+            var response = services.Select(s => new ServiceResponse(
                 s.Id,
                 s.Title,
                 s.Description,
                 s.Price,
-                s.Duration
-            });
+                s.Duration.TotalHours));
 
-            return Ok(services);
+            return Ok(response);
         }
 
-        [HttpGet("GetById{id:guid}")]
-        public async Task<ActionResult<ServiceResponse>> GetServiceById(long id)
+        [HttpGet("GetServiceById")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetServiceById(long id)
         {
             var service = await _servicesService.GetServiceById(id);
-          
-            return Ok(service);
+
+            if (service == null)
+                return NotFound();
+
+            var response = new ServiceResponse(
+                service.Id,
+                service.Title,
+                service.Description,
+                service.Price,
+                service.Duration.TotalHours);
+
+            return Ok(response);
         }
 
 
-        [HttpPost("Create")]
-        public async Task<ActionResult<long>> CreateService([FromBody] ServiceRequest request)
+        [HttpPost("CreateService")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateService([FromBody] ServiceRequest request)
         {
-            var service = Service.Create(0, request.Title, request.Description, request.Price, request.Duration);
-
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ValidationProblem("Something went wrong :("));
-            }
+                return BadRequest(ModelState);
 
-            var serviceId = await _servicesService.CreateService(service);
+            var duration = TimeSpan.FromMinutes(request.DurationInMinutes);
+            var (serviceId, error) = await _servicesService.CreateService(
+                request.Title,
+                request.Description,
+                request.Price,
+                duration);
 
-            return CreatedAtAction(nameof(GetServiceById), new { id = serviceId }, serviceId);
+            if (error != null)
+                return BadRequest(new { Error = error });
+
+            return CreatedAtAction(nameof(GetServiceById), new { id = serviceId });
         }
 
-        [HttpPut("Update{id:guid}")]
-        public async Task<ActionResult<long>> UpdateService(long id, [FromBody] ServiceRequest request)
+        [HttpPut("UpdateService")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateService(long id, [FromBody] ServiceRequest request)
         {
-           var serviceId = await _servicesService.UpdateService(id, request.Title, request.Description, request.Price, request.Duration);
-            return Ok(serviceId);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var duration = TimeSpan.FromMinutes(request.DurationInMinutes);
+            var (success, error) = await _servicesService.UpdateService(
+                id,
+                request.Title,
+                request.Description,
+                request.Price,
+                duration);
+
+            if (error != null)
+                return NotFound(new { Error = error });
+
+            if (!success)
+                return BadRequest(new { Error = "Falied to update service" });
+
+            return NoContent();
         }
 
-        [HttpDelete("Delete{id:guid}")]
+        [HttpDelete("DeleteService")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<long>> DeleteService(long id)
         {
-            var serviceId = await _servicesService.DeleteService(id);
-            return Ok(serviceId);
+            var success = await _servicesService.DeleteService(id);
+
+            if (!success)
+                return NotFound(new { Error = "Service not found or could not be deleted" });
+
+            return NoContent();
         }
     }
 }

@@ -4,92 +4,49 @@ using Alchemy.Infrastructure.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace Alchemy.Infrastructure.Repositories
 {
     [Authorize(Roles = "Admin")]
     public class UserRepository : IUserRepository
     {
-        private readonly AlchemyDbContext _alchemyDbContext;
+        private readonly AlchemyDbContext _context;
         private readonly IMapper _mapper;
-        public UserRepository(AlchemyDbContext alchemyDbContext, IMapper mapper)
+        public UserRepository(AlchemyDbContext context, IMapper mapper)
         {
-            _alchemyDbContext = alchemyDbContext;
+            _context = context;
             _mapper = mapper;
         }
 
-        public async Task<List<UserEntity>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers()
         {
-            var usersEntity = await _alchemyDbContext.Users
+            var userEntities = await _context.Users
                 .AsNoTracking()
-                .Include(u => u.Appointments)
                 .ToListAsync();
 
-            var users = usersEntity
-                .Select(u => new UserEntity
-                {
-                    Id = u.Id,
-                    UserName = u.UserName,
-                    PasswordHash = u.PasswordHash,
-                    Email = u.Email,
-                    Appointments = u.Appointments.Select(a => new AppointmentEntity
-                    {
-                        Id = a.Id,
-                        ScheduleSlotId = a.ScheduleSlotId,
-                        Description = a.Description,
-                        UserId = a.UserId,
-                        ServiceId = a.ServiceId,
-                        MasterId = a.MasterId
-                    }).ToList()
-                });
-
-            return users.ToList();
+            return _mapper.Map<List<User>>(userEntities);
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User?> GetUserById(string id)
         {
-            var userEntity = await _alchemyDbContext.Users
+            var userEntity = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Email == email) ?? throw new Exception("User not found");
+                .Include(u => u.FirstName)
+                .Include(u => u.LastName)
+                .Include(u => u.Appointments)
+                .ToListAsync();
 
             return _mapper.Map<User>(userEntity);
         }
 
-        public async Task<string> DeleteUser(string id)
+        public async Task<User> GetUserByEmail(string email)
         {
-            var user = await _alchemyDbContext.Users.FindAsync(id);
+            var userEntity = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.NormalizedEmail == email) ?? throw new Exception("User not found");
 
-            if (user == null)
-                throw new KeyNotFoundException("User not found");
-
-            _alchemyDbContext.Users.Remove(user);
-            await _alchemyDbContext.SaveChangesAsync();
-
-            return user.Id;
+            return _mapper.Map<User>(userEntity);
         }
-
-
-        public async Task AddUser(User user)
-        {
-            var userEntity = new UserEntity
-            {
-                UserName = user.UserName,
-                PasswordHash = user.PasswordHash,
-                Email = user.Email,
-                Appointments = user.Appointments.Select(a => new AppointmentEntity
-                {
-                    Id = a.Id,
-                    ScheduleSlotId = a.ScheduleSlotId,
-                    Description = a.Description,
-                    UserId = a.UserId,
-                    ServiceId = a.ServiceId,
-                    MasterId = a.MasterId
-                }).ToList()
-            };
-
-            await _alchemyDbContext.Users.AddAsync(userEntity);
-            await _alchemyDbContext.SaveChangesAsync();
-        }
-
     }
 }

@@ -5,93 +5,58 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Alchemy.Domain.Interfaces;
 using Google.Apis.Auth;
 
 namespace Alchemy.Infrastructure
 {
-    public class JwtHandler
+    public class JwtHandler : IJwtTokenGenerator
     {
         private readonly IConfiguration _configuration;
-        private readonly IConfigurationSection _googleSection;
-        private readonly IConfigurationSection _jwtSection;
         private readonly UserManager<User> _userManager;
 
         public JwtHandler(IConfiguration configuration, UserManager<User> userManager)
         {
             _configuration = configuration;
             _userManager = userManager;
-            _jwtSection = _configuration.GetSection("Jwt");
-            _googleSection = _configuration.GetSection("Google"); 
-        }
-        
-        public class ExternalLoginRequest
-        {
-            public string? Provider { get; set; }
-            public string? IdToken { get; set; }
         }
 
-        public async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(ExternalLoginRequest login)
-        {
-            try
-            {
-                var settings = new GoogleJsonWebSignature.ValidationSettings()
-                {
-                    Audience = [_googleSection.GetSection("ClientId").Value]
-                };
-
-                var payload = await GoogleJsonWebSignature.ValidateAsync(login.IdToken, settings);
-
-                return payload;
-            }
-
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
         public async Task<string> GenerateToken(User user)
         {
-            var signingCredentials = GetSigningCredentials();
             var claims = await GetClaims(user);
-            var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecurityKey"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["Jwt:ExpiresHours"]));
 
-            return token;
-        }
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: expires,
+                signingCredentials: creds
+            );
 
-        private SigningCredentials GetSigningCredentials()
-        {
-            var key = Encoding.UTF8.GetBytes(_jwtSection.GetSection("SecretKey").Value!);
-            var secret = new SymmetricSecurityKey(key);
-
-            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         private async Task<List<Claim>> GetClaims(User user)
         {
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Name, user.UserName!),
-                new(ClaimTypes.Email, user.Email!)
+                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Email, user.Email!),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new(ClaimTypes.Name, user.UserName!)
             };
 
-            var roles = await _userManager.GetRolesAsync(user);
-            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+            var userRoles = await _userManager.GetRolesAsync(user);
+            
+            foreach (var role in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             return claims;
-        }
-
-        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCred, List<Claim> claims)
-        {
-            var tokenOptions = new JwtSecurityToken(
-                issuer: _jwtSection.GetSection("Issuer").Value,
-                audience: _jwtSection.GetSection("Audience").Value,
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSection.GetSection("ExpiresHours").Value)),
-                signingCredentials: signingCred
-            );
-
-            return tokenOptions;
         }
     }
 }

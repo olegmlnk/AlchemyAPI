@@ -32,7 +32,6 @@ namespace Alchemy.Infrastructure.Repositories
             return _mapper.Map<List<Appointment>>(appointmentEntities);
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<Appointment> GetAppointmentById(long id)
         {
             var appointmentEntity = await _context.Appointments
@@ -50,7 +49,6 @@ namespace Alchemy.Infrastructure.Repositories
             return _mapper.Map<Appointment>(appointmentEntity);
         }
 
-        /*[Authorize(Roles = "Admin")]
         public async Task<List<Appointment>> GetAppointmentByMasterId(long masterId)
         {
             var appointmentEntity = await _context.Appointments
@@ -58,18 +56,9 @@ namespace Alchemy.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
 
-            var apointments = appointmentEntity
-                .Select(a => Appointment.Create(
-                    a.ScheduleSlotId,
-                    a.Description,
-                    a.UserId,
-                    a.MasterId,
-                    a.ServiceId).Appointment).ToList();
+            return _mapper.Map<List<Appointment>>(appointmentEntity);
+        }
 
-            return apointments;
-        }*/
-
-        [Authorize(Roles = "Admin")]
         public async Task<List<Appointment>> GetAppointmentByUserId(string userId)
         {
             var appointmentEntities = await _context.Appointments
