@@ -5,12 +5,11 @@ using Alchemy.Domain.Interfaces;
 using Alchemy.Application.Services;
 using Alchemy.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Alchemy.Infrastructure.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Alchemy.Domain.Models;
-using AlchemyAPI.Mappings;
+using Alchemy.Infrastructure.Configurations;
 
 
 namespace AlchemyAPI
@@ -20,7 +19,8 @@ namespace AlchemyAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
             // Add services to the container.
             builder.Services.AddSwaggerGen(options =>
             {
@@ -31,15 +31,13 @@ namespace AlchemyAPI
                 });
             });
 
-            builder.Services.AddAutoMapper(typeof(UserMapper), typeof(AuthMapping));
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
-
-            builder.Services.AddScoped<JwtHandler>();
-
+            
+            builder.Services.AddAutoMapper(typeof(Program), typeof(InfrastructureMappingProfile));
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 8;
@@ -99,6 +97,7 @@ namespace AlchemyAPI
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IJwtTokenGenerator, JwtHandler>();
+            
 
             var app = builder.Build();
 

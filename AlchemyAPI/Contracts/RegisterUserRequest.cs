@@ -14,6 +14,5 @@ namespace AlchemyAPI.Contracts
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
-        public string? UserURI { get; set; }
     }
 }

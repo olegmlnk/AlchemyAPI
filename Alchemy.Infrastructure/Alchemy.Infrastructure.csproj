@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Alchemy.Domain\Alchemy.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

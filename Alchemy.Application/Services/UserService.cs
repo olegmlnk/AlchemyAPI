@@ -3,8 +3,6 @@ using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
 using Alchemy.Infrastructure;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace Alchemy.Application.Services
 {
@@ -16,7 +14,7 @@ namespace Alchemy.Application.Services
 
         public UserService(UserManager<User> userManager, IJwtTokenGenerator jwtTokenGenerator)
         {
-            _userManager = _userManager;
+            _userManager = userManager;
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 

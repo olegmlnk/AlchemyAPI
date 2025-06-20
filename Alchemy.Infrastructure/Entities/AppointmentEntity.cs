@@ -14,7 +14,7 @@ namespace Alchemy.Infrastructure.Entities
      public long ServiceId { get; set; }
      public long ScheduleSlotId { get; set; }
 
-     public virtual UserEntity User { get; set; } = null!;
+     public virtual User User { get; set; } = null!;
      public virtual MasterEntity Master { get; set; } = null!;
      public virtual ServiceEntity Service { get; set; } = null!;
      public virtual MasterScheduleEntity ScheduleSlot { get; set; } = null!;

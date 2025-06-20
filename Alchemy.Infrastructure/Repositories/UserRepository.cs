@@ -12,41 +12,33 @@ namespace Alchemy.Infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly AlchemyDbContext _context;
-        private readonly IMapper _mapper;
-        public UserRepository(AlchemyDbContext context, IMapper mapper)
+        public UserRepository(AlchemyDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         public async Task<List<User>> GetAllUsers()
         {
-            var userEntities = await _context.Users
+            return await _context.Users
                 .AsNoTracking()
                 .ToListAsync();
-
-            return _mapper.Map<List<User>>(userEntities);
         }
 
         public async Task<User?> GetUserById(string id)
         {
-            var userEntity = await _context.Users
+            return await _context.Users
                 .AsNoTracking()
                 .Include(u => u.FirstName)
                 .Include(u => u.LastName)
                 .Include(u => u.Appointments)
-                .ToListAsync();
-
-            return _mapper.Map<User>(userEntity);
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User> GetUserByEmail(string email)
         {
-            var userEntity = await _context.Users
+            return await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.NormalizedEmail == email) ?? throw new Exception("User not found");
-
-            return _mapper.Map<User>(userEntity);
         }
     }
 }

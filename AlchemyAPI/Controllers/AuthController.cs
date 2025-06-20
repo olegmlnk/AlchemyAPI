@@ -21,9 +21,9 @@ namespace AlchemyAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ILogger _logger;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IUserService userService, ILogger logger)
+        public AuthController(IUserService userService, ILogger<AuthController> logger)
         {
             _userService = userService;
             _logger = logger;
