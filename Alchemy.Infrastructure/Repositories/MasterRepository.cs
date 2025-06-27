@@ -24,7 +24,7 @@ namespace Alchemy.Infrastructure.Repositories
                 .ToListAsync();
             return _mapper.Map<List<Master>>(entities);
         }
-
+ 
 
         public async Task<Master?> GetMasterById(long id)
         {

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Configurations;
+using Alchemy.Infrastructure.Mappings;
 
 
 namespace AlchemyAPI
