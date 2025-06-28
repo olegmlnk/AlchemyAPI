@@ -1,15 +1,17 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using Alchemy.Infrastructure;
+﻿using Alchemy.Application.Services;
 using Alchemy.Domain.Interfaces;
-using Alchemy.Application.Services;
-using Alchemy.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Alchemy.Domain.Models;
 using Alchemy.Infrastructure.Configurations;
+using Alchemy.Infrastructure;
+using Alchemy.Infrastructure.Mappings;
+using Alchemy.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System;
+using System.Text;
 
 
 namespace AlchemyAPI
@@ -121,6 +123,13 @@ namespace AlchemyAPI
             app.MapControllers();
 
             app.Run();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AlchemyDbContext>();
+                var canConnect = db.Database.CanConnect();
+                Console.WriteLine($"📡 Database connection: {(canConnect ? "OK" : "FAILED")}");
+            }
 
         }
     }
