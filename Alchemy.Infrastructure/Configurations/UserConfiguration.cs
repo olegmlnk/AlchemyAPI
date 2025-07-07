@@ -9,7 +9,7 @@ namespace Alchemy.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("User");
+            builder.ToTable("Users");
 
             builder.Property(u => u.FirstName)
                 .HasMaxLength(User.MAX_NAME_LENGTH)

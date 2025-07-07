@@ -9,7 +9,7 @@ namespace Alchemy.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<MasterEntity> builder)
         {
-            builder.ToTable("Master");
+            builder.ToTable("Masters");
 
             builder.HasKey(m => m.Id);
 

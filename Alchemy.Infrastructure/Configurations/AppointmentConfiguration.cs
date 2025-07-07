@@ -9,7 +9,7 @@ namespace Alchemy.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<AppointmentEntity> builder)
         {
-            builder.ToTable("Appointment");
+            builder.ToTable("Appointments");
 
             builder.HasKey(a => a.Id);
 
@@ -21,22 +21,22 @@ namespace Alchemy.Infrastructure.Configurations
             builder.HasOne(a => a.Master)
                 .WithMany(m => m.Appointments)
                 .HasForeignKey(a => a.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(a => a.Master)
                 .WithMany(u => u.Appointments)
                 .HasForeignKey(a => a.MasterId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(a => a.Service)
                 .WithMany()
                 .HasForeignKey(a => a.ServiceId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(a => a.ScheduleSlot)
                 .WithOne(ms => ms.Appointment)
                 .HasForeignKey<AppointmentEntity>(a => a.ScheduleSlotId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(a => a.ScheduleSlotId).IsUnique();
         }
