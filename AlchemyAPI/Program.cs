@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Alchemy.Infrastructure;
 using Alchemy.Domain.Interfaces;
@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Alchemy.Domain.Models;
+using Alchemy.Infrastructure.Configurations;
 using Alchemy.Infrastructure.Mappings;
 
 
