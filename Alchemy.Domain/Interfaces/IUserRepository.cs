@@ -5,7 +5,7 @@ namespace Alchemy.Domain.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User?> GetUserById(string id);
+        Task<User?> GetUserById(Guid id);
         Task<User?> GetUserByEmail(string email);
         Task<List<User>> GetAllUsers();
     }

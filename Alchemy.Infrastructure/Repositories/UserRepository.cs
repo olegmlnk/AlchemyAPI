@@ -1,10 +1,7 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Entities;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace Alchemy.Infrastructure.Repositories
 {
@@ -24,7 +21,7 @@ namespace Alchemy.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<User?> GetUserById(string id)
+        public async Task<User?> GetUserById(Guid id)
         {
             return await _context.Users
                 .AsNoTracking()

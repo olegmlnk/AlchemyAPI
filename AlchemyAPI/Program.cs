@@ -9,9 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Configurations;
-using Alchemy.Infrastructure.Mappings;
-
+using Alchemy.Infrastructure.Options;
+using Scalar.AspNetCore;
 
 namespace AlchemyAPI
 {
@@ -20,25 +19,20 @@ namespace AlchemyAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
+            builder.Services.Configure<JwtOptions>(
+                builder.Configuration.GetSection(JwtOptions.JwtOptionsKey));
+            
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
             // Add services to the container.
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "AlchemyAPI",
-                    Version = "v1"
-                });
-            });
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddDbContext<AlchemyDbContext>(option =>
-            option.UseSqlServer(builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
+            option.UseNpgsql(builder.Configuration.GetConnectionString("AlchemyConnectionString") ?? throw new InvalidOperationException("Connection string 'Default' not found.")));
             
-            builder.Services.AddAutoMapper(typeof(Program), typeof(InfrastructureMappingProfile));
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 8;
@@ -76,11 +70,7 @@ namespace AlchemyAPI
                     };
                 });
             
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
-            });
+            builder.Services.AddAuthorization();
 
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
@@ -96,8 +86,7 @@ namespace AlchemyAPI
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
-
-            builder.Services.AddScoped<IJwtTokenGenerator, JwtHandler>();
+            
             
 
             var app = builder.Build();
@@ -106,11 +95,14 @@ namespace AlchemyAPI
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
+                app.MapScalarApiReference(options =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "AlchemyAPI V1");
-                    c.RoutePrefix = "";
+                    options.WithTitle("JWT Authentication API");
+                });
+                app.MapGet("/", context =>
+                {
+                    context.Response.Redirect("/scalar/", permanent: false);
+                    return Task.CompletedTask;
                 });
             }
             app.UseHttpsRedirection();

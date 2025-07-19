@@ -1,13 +1,12 @@
 ﻿using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Alchemy.Infrastructure.Configurations
 {
-    public class MasterConfiguration : IEntityTypeConfiguration<MasterEntity>
+    public class MasterConfiguration : IEntityTypeConfiguration<Master>
     {
-        public void Configure(EntityTypeBuilder<MasterEntity> builder)
+        public void Configure(EntityTypeBuilder<Master> builder)
         {
             builder.ToTable("Masters");
 
@@ -27,7 +26,8 @@ namespace Alchemy.Infrastructure.Configurations
                 .WithOne(a => a.Master)
                 .HasForeignKey(a => a.MasterId)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(m => m.ScheduleSlots)
+            
+            builder.HasMany(m => m.MasterSchedules)
                 .WithOne(ms => ms.Master)
                 .HasForeignKey(ms => ms.MasterId)
                 .OnDelete(DeleteBehavior.Cascade);

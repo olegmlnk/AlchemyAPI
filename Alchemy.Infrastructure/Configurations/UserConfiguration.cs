@@ -1,5 +1,4 @@
 ﻿using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,36 +1,25 @@
 ﻿using System.Security.Claims;
-using System.Linq;
-using System.Runtime.InteropServices.JavaScript;
 using Alchemy.Domain.Interfaces;
 using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Alchemy.Domain.Models;
-using Alchemy.Infrastructure;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.DotNet.Scaffolding.Shared.Messaging;
-using Microsoft.Identity.Client;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace AlchemyAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ILogger<AuthController> _logger;
+        private readonly ILogger<AccountController> _logger;
 
-        public AuthController(IUserService userService, ILogger<AuthController> logger)
+        public AccountController(IUserService userService, ILogger<AccountController> logger)
         {
             _userService = userService;
             _logger = logger;
         }
 
         [HttpPost("Register")]
-        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
             if (!ModelState.IsValid)
@@ -50,7 +39,6 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpPost("Login")]
-        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
         {
             if (!ModelState.IsValid)
