@@ -1,6 +1,5 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -77,7 +76,7 @@ namespace Alchemy.Infrastructure.Repositories
 
         public async Task<long> CreateAppointment(Appointment appointment)
         {
-            var appointmentEntity = _mapper.Map<AppointmentEntity>(appointment);
+            var appointmentEntity = _mapper.Map<Appointment>(appointment);
 
             var scheduleSlotEntity = await _context.MasterSchedules.FindAsync(appointment.ScheduleSlotId);
 

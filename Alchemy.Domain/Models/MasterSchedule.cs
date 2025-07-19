@@ -17,7 +17,7 @@ namespace Alchemy.Domain.Models
         public long MasterId { get; private set; }
         public virtual Master Master { get; private set; } = null!;
         public DateTime SlotTime { get; private set; }
-        public bool IsBooked { get; private set; }
+        public bool IsBooked { get; set; }
  
         public virtual Appointment? Appointment { get; private set; }
 

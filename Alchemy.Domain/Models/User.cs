@@ -2,31 +2,19 @@
 
 namespace Alchemy.Domain.Models
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<Guid>
     {
         public const int MAX_NAME_LENGTH = 50;
         
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
+        
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiresAtUtc { get; set; }
 
         private readonly List<Appointment> _appointment = new List<Appointment>();
         public IReadOnlyList<Appointment> Appointments => _appointment.AsReadOnly();
-
-        private User(string userName, string email, string firstName, string lastName) 
-        : base(userName)
-        {
-            Email = email;
-            NormalizedEmail = email.ToUpperInvariant();
-            NormalizedUserName = userName.ToUpperInvariant();
-            FirstName = firstName;
-            LastName = lastName;
-        }
-
-        public User()
-        {
-            FirstName = string.Empty;
-            LastName = string.Empty;
-        }
+        
 
         public static (User? User, string? Error) Create(string userName, string email, string firstName,
             string lastName)
@@ -52,7 +40,12 @@ namespace Alchemy.Domain.Models
             if (errors.Any())
                 return (null, string.Join("; ", errors));
 
-            var user = new User(userName, email, firstName, lastName);
+            var user = new User{
+                UserName = email,
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName
+                };
 
             return (user, null);
         }

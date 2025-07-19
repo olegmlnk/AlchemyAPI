@@ -1,13 +1,12 @@
-﻿using Alchemy.Infrastructure.Entities;
-using Alchemy.Domain.Models;
+﻿using Alchemy.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Alchemy.Infrastructure.Configurations
 {
-    public class AppointmentConfiguration : IEntityTypeConfiguration<AppointmentEntity>
+    public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
     {
-        public void Configure(EntityTypeBuilder<AppointmentEntity> builder)
+        public void Configure(EntityTypeBuilder<Appointment> builder)
         {
             builder.ToTable("Appointments");
 
@@ -35,7 +34,7 @@ namespace Alchemy.Infrastructure.Configurations
 
             builder.HasOne(a => a.ScheduleSlot)
                 .WithOne(ms => ms.Appointment)
-                .HasForeignKey<AppointmentEntity>(a => a.ScheduleSlotId)
+                .HasForeignKey<Appointment>(a => a.ScheduleSlotId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(a => a.ScheduleSlotId).IsUnique();

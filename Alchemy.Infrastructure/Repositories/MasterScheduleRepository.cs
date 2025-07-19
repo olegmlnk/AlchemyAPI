@@ -1,6 +1,5 @@
 ﻿using Alchemy.Domain.Interfaces;
 using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,7 +66,7 @@ namespace Alchemy.Infrastructure.Repositories
 
         public async Task<long> CreateMasterSchedule(MasterSchedule schedule)
         {
-            var entityToCreate = _mapper.Map<MasterScheduleEntity>(schedule);
+            var entityToCreate = _mapper.Map<MasterSchedule>(schedule);
 
             await _context.MasterSchedules.AddAsync(entityToCreate);
             await _context.SaveChangesAsync();

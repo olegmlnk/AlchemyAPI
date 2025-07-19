@@ -1,7 +1,5 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Domain.Interfaces;
-using Alchemy.Infrastructure.Entities;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
@@ -9,12 +7,10 @@ namespace Alchemy.Infrastructure.Repositories
     public class ServiceRepository : IServiceRepository
     {
         private readonly AlchemyDbContext _context;
-        private readonly IMapper _mapper;
 
-        public ServiceRepository(AlchemyDbContext context, IMapper mapper)
+        public ServiceRepository(AlchemyDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         public async Task<List<Service>> GetServices()
@@ -23,7 +19,7 @@ namespace Alchemy.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
             
-            return _mapper.Map<List<Service>>(serviceEntities);
+            return serviceEntities;
         }
 
         public async Task<Service?> GetServiceById(long id)
@@ -35,15 +31,14 @@ namespace Alchemy.Infrastructure.Repositories
             if (service == null)
                 throw new KeyNotFoundException("Service not found");
 
-            return _mapper.Map<Service>(service);
+            return service;
         }
 
         public async Task<long> CreateService(Service service)
         {
-            var serviceEntity = _mapper.Map<ServiceEntity>(service);
-            await _context.Services.AddAsync(serviceEntity);
+            await _context.Services.AddAsync(service);
             await _context.SaveChangesAsync();
-            return serviceEntity.Id;
+            return service.Id;
         }
 
         public async Task<bool> UpdateService(Service service)
@@ -52,8 +47,7 @@ namespace Alchemy.Infrastructure.Repositories
 
             if (serviceToUpdate == null)
                 return false;
-
-            _mapper.Map(service, serviceToUpdate);
+            
             _context.Services.Update(serviceToUpdate);
             return await _context.SaveChangesAsync() > 0;
         }

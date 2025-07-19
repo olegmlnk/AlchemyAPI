@@ -1,13 +1,12 @@
 ﻿using Alchemy.Domain.Models;
-using Alchemy.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Alchemy.Infrastructure.Configurations
 {
-    public class ServiceConfiguration : IEntityTypeConfiguration<ServiceEntity>
+    public class ServiceConfiguration : IEntityTypeConfiguration<Service>
     {
-        public void Configure(EntityTypeBuilder<ServiceEntity> builder)
+        public void Configure(EntityTypeBuilder<Service> builder)
         {
             builder.ToTable("Services");
             

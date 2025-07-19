@@ -1,7 +1,5 @@
 ﻿using Alchemy.Domain.Models;
 using Alchemy.Domain.Interfaces;
-using Alchemy.Infrastructure.Entities;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alchemy.Infrastructure.Repositories
@@ -9,12 +7,10 @@ namespace Alchemy.Infrastructure.Repositories
     public class MasterRepository : IMasterRepository
     {
         private readonly AlchemyDbContext _context;
-        private readonly IMapper _mapper;
 
-        public MasterRepository(AlchemyDbContext context, IMapper mapper)
+        public MasterRepository(AlchemyDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         public async Task<List<Master>> GetAllMasters()
@@ -22,7 +18,7 @@ namespace Alchemy.Infrastructure.Repositories
             var entities = await _context.Masters
                 .AsNoTracking()
                 .ToListAsync();
-            return _mapper.Map<List<Master>>(entities);
+            return entities;
         }
  
 
@@ -30,19 +26,21 @@ namespace Alchemy.Infrastructure.Repositories
         {
             var entity = await _context.Masters
                 .AsNoTracking()
-                .Include(m => m.ScheduleSlots)
+                .Include(m => m.MasterSchedules)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            return _mapper.Map<Master>(entity);
+            return (entity);
         }
 
         public async Task<long> CreateMaster(Master master)
         {
-            var masterEntity = _mapper.Map<MasterEntity>(master);
-            await _context.Masters.AddAsync(masterEntity);
+            var masterEntity = Master.Create(
+                master.Name, master.Experience, master.Description);
+            
+            await _context.Masters.AddAsync(master);
             await _context.SaveChangesAsync();
 
-            return masterEntity.Id;
+            return master.Id;
         }
 
         public async Task<bool> UpdateMaster(Master master)
@@ -52,7 +50,6 @@ namespace Alchemy.Infrastructure.Repositories
             if (entityToUpdate == null)
                 return false;
 
-            _mapper.Map(master, entityToUpdate);
             _context.Masters.Update(entityToUpdate);
 
             return await _context.SaveChangesAsync() > 0;
