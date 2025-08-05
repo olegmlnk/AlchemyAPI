@@ -1,9 +1,7 @@
-﻿using Alchemy.Domain.Models;
+﻿using Alchemy.Domain.Contracts;
 using Alchemy.Domain.Interfaces;
-using AlchemyAPI.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AlchemyAPI.Controllers
 {
@@ -40,7 +38,7 @@ namespace AlchemyAPI.Controllers
 
         [HttpGet("GetMasterById")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetMasterById(long id)
+        public async Task<IActionResult> GetMasterById(Guid id)
         {
             var master = await _masterService.GetMasterById(id);
 
@@ -81,7 +79,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateMaster(long id, [FromBody] MasterRequest request)
+        public async Task<IActionResult> UpdateMaster(Guid id, [FromBody] MasterRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -103,7 +101,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpDelete("Delete")]
-        public async Task<IActionResult> DeleteMaster(long id)
+        public async Task<IActionResult> DeleteMaster(Guid id)
         {
             _logger.LogInformation($"Deleting master with ID {id}");
             var success = await _masterService.DeleteMaster(id);

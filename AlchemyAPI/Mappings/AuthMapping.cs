@@ -1,5 +1,5 @@
+using Alchemy.Domain.Contracts;
 using Alchemy.Domain.Models;
-using AlchemyAPI.Contracts;
 using AutoMapper;
 
 namespace AlchemyAPI.Mappings

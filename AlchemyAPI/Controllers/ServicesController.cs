@@ -1,5 +1,5 @@
-﻿using Alchemy.Domain.Interfaces;
-using AlchemyAPI.Contracts;
+﻿using Alchemy.Domain.Contracts;
+using Alchemy.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +34,7 @@ namespace AlchemyAPI.Controllers
 
         [HttpGet("GetServiceById")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetServiceById(long id)
+        public async Task<IActionResult> GetServiceById(Guid id)
         {
             var service = await _servicesService.GetServiceById(id);
 
@@ -74,7 +74,7 @@ namespace AlchemyAPI.Controllers
 
         [HttpPut("UpdateService")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateService(long id, [FromBody] ServiceRequest request)
+        public async Task<IActionResult> UpdateService(Guid id, [FromBody] ServiceRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -98,7 +98,7 @@ namespace AlchemyAPI.Controllers
 
         [HttpDelete("DeleteService")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<long>> DeleteService(long id)
+        public async Task<ActionResult<Guid>> DeleteService(Guid id)
         {
             var success = await _servicesService.DeleteService(id);
 

@@ -4,19 +4,19 @@ namespace Alchemy.Domain.Interfaces
 {
     public interface IAppointmentService
     {
-        Task<Appointment?> GetAppointmentById(long id);
+        Task<Appointment?> GetAppointmentById(Guid id);
         Task<List<Appointment>> GetAllAppointments();
-        Task<List<Appointment>> GetAppointmentsByUserId(string userId);
-        Task<List<Appointment>> GetAppointmentsByMasterId(long masterId);
-        Task<(long? AppointmentId, string? Error)> CreateAppointment(long scheduleSlotId,
+        Task<List<Appointment>> GetAppointmentsByUserId(Guid userId);
+        Task<List<Appointment>> GetAppointmentsByMasterId(Guid masterId);
+        Task<(Guid? AppointmentId, string? Error)> CreateAppointment(Guid scheduleSlotId,
             string description,
-            long masterId,
-            long serviceId,
-            string currentUserId);
-        Task<(bool Success, string? Error)> UpdateAppointment(long appointmentId, string newDescription,
-            string currentUserId);
+            Guid masterId,
+            Guid serviceId,
+            Guid currentUserId);
+        Task<(bool Success, string? Error)> UpdateAppointment(Guid appointmentId, string newDescription,
+            Guid currentUserId);
 
-        Task<(bool Success, string? Error)> CancelAppointment(long appointmentId, string currentUserId,
+        Task<(bool Success, string? Error)> CancelAppointment(Guid appointmentId, Guid currentUserId,
             bool isUserAdmin);
     }
 }

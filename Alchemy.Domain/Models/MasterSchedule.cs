@@ -4,33 +4,27 @@ namespace Alchemy.Domain.Models
 {
     public class MasterSchedule
     {
-        protected MasterSchedule() { }
-        private MasterSchedule(long masterId, DateTime slotTime, Master master)
-        {
-            MasterId = masterId;
-            SlotTime = slotTime;
-            IsBooked = false;
-            Master = master;
-        }
+        private MasterSchedule() { }
 
-        public long Id { get; private set; }
-        public long MasterId { get; private set; }
+        public Guid Id { get; private set; }
+        public Guid MasterId { get; private set; }
         public virtual Master Master { get; private set; } = null!;
         public DateTime SlotTime { get; private set; }
         public bool IsBooked { get; set; }
  
         public virtual Appointment? Appointment { get; private set; }
 
-        public static (MasterSchedule? Schedule, string? Error) Create(long masterId, DateTime slotTime, Master master)
+        public static (MasterSchedule? Schedule, string? Error) Create(Guid id, Guid masterId, DateTime slotTime, Master master)
         {
             var errors = new List<string>();
+            
+            if (id == Guid.Empty)
+                errors.Add("Id cannot be empty.");
 
             if (master == null)
                 errors.Add("Master cannot be null.");
-            else if (master.Id != masterId)
-                errors.Add("Provided masterId does match the master object.");
-
-            if (masterId <= 0)
+           
+            if (masterId == Guid.Empty)
                 errors.Add("Invalid masterId");
 
             if (slotTime < DateTime.UtcNow.AddMinutes(-5))
@@ -39,7 +33,13 @@ namespace Alchemy.Domain.Models
             if (errors.Any())
                 return (null, string.Join("; ", errors));
 
-            var schedule = new MasterSchedule(masterId, slotTime, master);
+            var schedule = new MasterSchedule
+            {
+                Id = id,
+                MasterId = masterId,
+                SlotTime = slotTime,
+                Master = master
+            };
 
             return (schedule, null);
         }

@@ -15,17 +15,17 @@ namespace Alchemy.Application.Services
         }
 
 
-        public Task<MasterSchedule?> GetByIdAsync(long id)
+        public Task<MasterSchedule?> GetByIdAsync(Guid id)
         {
             return _repository.GetMasterScheduleById(id);
         }
 
-        public Task<List<MasterSchedule>> GetByMasterIdAsync(long masterId)
+        public Task<List<MasterSchedule>> GetByMasterIdAsync(Guid masterId)
         {
             return _repository.GetMasterScheduleByMasterId(masterId);
         }
 
-        public async Task<(long? ScheduleId, string? Error)> CreateSlot(long masterId, DateTime slotTime)
+        public async Task<(Guid? ScheduleId, string? Error)> CreateSlot(Guid masterId, DateTime slotTime)
         {
             var master = await _masterRepository.GetMasterById(masterId);
             
@@ -41,7 +41,7 @@ namespace Alchemy.Application.Services
             return (createdId, null);
         }
 
-        public async Task<(bool Success, string? Error)> MarkSlotAsBooked(long id)
+        public async Task<(bool Success, string? Error)> MarkSlotAsBooked(Guid id)
         {
             var schedule = await _repository.GetMasterScheduleById(id);
 
@@ -61,7 +61,7 @@ namespace Alchemy.Application.Services
             return (true, null);
         }
 
-        public async Task<(bool Success, string? Error)> MarkSlotAsAvailable(long id)
+        public async Task<(bool Success, string? Error)> MarkSlotAsAvailable(Guid id)
         {
             var schedule = await _repository.GetMasterScheduleById(id);
 

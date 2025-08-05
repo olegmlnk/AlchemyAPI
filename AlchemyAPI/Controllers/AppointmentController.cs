@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
+using Alchemy.Domain.Contracts;
 using Alchemy.Domain.Interfaces;
-using AlchemyAPI.Contracts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlchemyAPI.Controllers
@@ -40,7 +39,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpGet("GetAppointmentById")]
-        public async Task<IActionResult> GetAppointmentById(long id)
+        public async Task<IActionResult> GetAppointmentById(Guid id)
         {
             var appointment = await _appointmentService.GetAppointmentById(id);
 
@@ -74,7 +73,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpGet("GetByMasterId")]
-        public async Task<IActionResult> GetAppointmentsByMasterId(long id)
+        public async Task<IActionResult> GetAppointmentsByMasterId(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -116,7 +115,7 @@ namespace AlchemyAPI.Controllers
         }
 
         [HttpPut("UpdateAppointment")]
-        public async Task<IActionResult> UpdateAppointment(long id, [FromBody] AppointmentRequest request)
+        public async Task<IActionResult> UpdateAppointment(Guid id, [FromBody] AppointmentRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -152,7 +151,7 @@ namespace AlchemyAPI.Controllers
     
 
     [HttpDelete("CancelAppointment")]
-        public async Task<IActionResult> CancelAppointment(long id)
+        public async Task<IActionResult> CancelAppointment(Guid id)
         {
             var appointment = await _appointmentService.GetAppointmentById(id);
 

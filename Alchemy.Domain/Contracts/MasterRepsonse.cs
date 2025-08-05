@@ -1,8 +1,8 @@
-﻿namespace AlchemyAPI.Contracts
+﻿namespace Alchemy.Domain.Contracts
 {
     public record MasterRepsonse
     (
-        long Id,
+        Guid Id,
         string Name,
         string Experience,
         string Description

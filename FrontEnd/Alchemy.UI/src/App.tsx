@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <div>
-        <button>Smack ma ass</button>
+        <button>Alchemy UI</button>
       </div>
       
     </>

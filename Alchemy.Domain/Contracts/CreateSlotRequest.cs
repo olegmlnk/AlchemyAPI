@@ -1,7 +1,7 @@
-namespace AlchemyAPI.Contracts;
+namespace Alchemy.Domain.Contracts;
 
 public record CreateSlotRequest
 (
-    long MasterId,
+    Guid MasterId,
         DateTime SlotTime
 );

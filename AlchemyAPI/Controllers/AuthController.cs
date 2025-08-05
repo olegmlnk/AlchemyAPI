@@ -1,13 +1,18 @@
 ﻿using System.Security.Claims;
+using Alchemy.Domain.Contracts;
 using Alchemy.Domain.Interfaces;
-using AlchemyAPI.Contracts;
+using Alchemy.Domain.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace AlchemyAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/account/[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -19,63 +24,65 @@ namespace AlchemyAPI.Controllers
             _logger = logger;
         }
 
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterUserRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var (succeded, errors) = await _userService.Register(
-                request.UserName,
-                request.Email,
-                request.Password,
-                request.FirstName,
-                request.LastName);
-
-            if (!succeded)
-                return BadRequest(new { Errors = errors });
-
-            return Ok(new { Message = "User registered successfully" });
+            await _userService.RegisterAsync(request);
+            return Ok("User registered successfully.");
         }
 
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginAsync([FromBody] LoginUserRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var (token, error) = await _userService.Login(request.Email, request.Password);
-
-            if (error != null)
-                return Unauthorized(new { Errors = error });
-
-            return Ok(new { Token = token });
+            await _userService.LoginAsync(request);
+            return Ok("User logged in successfully.");
         }
 
-        [HttpGet("Profile")]
-        [Authorize]
-        public IActionResult GetProfile()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = User.FindFirstValue(ClaimTypes.Name);
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+        [HttpGet("login/google")]
+        public IActionResult GoogleLogin([FromQuery] string returnUrl, LinkGenerator linkGenerator, SignInManager<User> signInManager, HttpContext context)
 
-            if (userId == null)
+        {
+            var properties = signInManager.ConfigureExternalAuthenticationProperties("Google",
+                linkGenerator.GetPathByName(context, "GoogleLoginCallback")
+                + $"?returnUrl={returnUrl}");
+
+            return Challenge(properties, ["Google"]);
+        }
+    
+
+        [HttpGet("login/google/callback", Name = "GoogleLoginCallback")]
+        public async Task<IActionResult> GoogleCallbackAsync([FromQuery] string returnUrl, HttpContext httpContext,
+            IUserService accountService)
+        {
+            var result = await httpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded)
+            {
                 return Unauthorized();
+            }
 
-            _logger.LogInformation($"User profile requested for user ID: {userId}");
+            await accountService.LoginWithGoogleAsync(result.Principal);
 
-            return Ok
-            (
-                new
-                {
-                    Id = userId,
-                    UserName = userName,
-                    Email = userEmail,
-                    Roles = roles
-                }
-            );
+            return Redirect(returnUrl);
         }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshTokenAsync(HttpContext httpContext)
+        {
+            var refreshToken = httpContext.Request.Cookies["REFRESH_TOKEN"];
+            await _userService.RefreshTokenAsync(refreshToken);
+        
+            return Ok("Refresh token processed successfully.");
+        }
+    
+        [HttpGet("get-movies")]
+        [Authorize]
+        public async Task<IActionResult> GetMoviesAsync()
+        {
+            var movies = new List<string> { "Movie 1", "Movie 2", "Movie 3" };
+        
+            return Ok(movies);
+        }
+        
     }
 }

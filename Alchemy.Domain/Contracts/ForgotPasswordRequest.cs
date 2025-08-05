@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AlchemyAPI.Contracts;
+namespace Alchemy.Domain.Contracts;
 
 public class ForgotPasswordRequest
 {

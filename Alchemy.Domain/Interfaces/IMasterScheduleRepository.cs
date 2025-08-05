@@ -2,12 +2,8 @@
 
 namespace Alchemy.Domain.Interfaces
 {
-    public interface IMasterScheduleRepository
+    public interface IMasterScheduleRepository : IGenericRepository<MasterSchedule>
     {
-        Task<MasterSchedule?> GetMasterScheduleById(long id);
-        Task<List<MasterSchedule>> GetAllMasterSchedules();
-        Task<List<MasterSchedule>> GetMasterScheduleByMasterId(long masterId);
-        Task<long> CreateMasterSchedule(MasterSchedule schedule);
-        Task<bool> UpdateMasterSchedule(MasterSchedule schedule);
+        
     }
 }

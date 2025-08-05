@@ -1,4 +1,5 @@
 ﻿using Alchemy.Application.Services;
+using Alchemy.Domain.Contracts;
 using Alchemy.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Alchemy.Domain.Interfaces;
@@ -22,7 +23,7 @@ namespace AlchemyAPI.Controllers
 
         [HttpGet("GetByMasterId")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetByMasterId(long masterId)
+        public async Task<IActionResult> GetByMasterId(Guid masterId)
         {
             var slots = await _scheduleService.GetByMasterIdAsync(masterId);
 
@@ -59,7 +60,7 @@ namespace AlchemyAPI.Controllers
 
         [HttpPost("MaskSlotAsAvailable")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> MarkSlotAsAvailable(long id)
+        public async Task<IActionResult> MarkSlotAsAvailable(Guid id)
         {
             var (success, error) = await _scheduleService.MarkSlotAsAvailable(id);
             if (!success)

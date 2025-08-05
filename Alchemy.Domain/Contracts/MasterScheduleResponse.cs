@@ -1,8 +1,8 @@
-namespace AlchemyAPI.Contracts;
+namespace Alchemy.Domain.Contracts;
 
 public record MasterScheduleResponse(
-    long Id,
-    long MasterId,
+    Guid Id,
+    Guid MasterId,
     string MasterName,
     DateTime SlotTime, 
     bool IsBooked

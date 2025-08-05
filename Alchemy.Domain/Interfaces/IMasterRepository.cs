@@ -2,12 +2,10 @@
 
 namespace Alchemy.Domain.Interfaces
 {
-    public interface IMasterRepository
+    public interface IMasterRepository : IGenericRepository<Master>
     {
-        Task<Master?> GetMasterById(long id);
-        Task<List<Master>> GetAllMasters();
-        Task<long> CreateMaster(Master master);
-        Task<bool> UpdateMaster(Master master);
-        Task<bool> DeleteMaster(long id);
+        // Additional methods specific to Master can be defined here if needed
+        // For example, you might want to add methods for specific queries or operations
+        // that are unique to the Master entity.
     }
 }

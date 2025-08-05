@@ -26,7 +26,7 @@ namespace Alchemy.Application.Services
             _userManager = userManager;
         }
 
-        public Task<Appointment?> GetAppointmentById(long id)
+        public Task<Appointment?> GetAppointmentById(Guid id)
         {
             return _appointmentRepository.GetAppointmentById(id);
         }
@@ -36,21 +36,21 @@ namespace Alchemy.Application.Services
             return _appointmentRepository.GetAllAppointments();
         }
 
-        public Task<List<Appointment>> GetAppointmentsByUserId(string userId)
+        public Task<List<Appointment>> GetAppointmentsByUserId(Guid userId)
         {
             return _appointmentRepository.GetAppointmentByUserId(userId);
         }
 
-        public Task<List<Appointment>> GetAppointmentsByMasterId(long masterId)
+        public Task<List<Appointment>> GetAppointmentsByMasterId(Guid masterId)
         {
             return _appointmentRepository.GetAppointmentByMasterId(masterId);
         }
 
-        public async Task<(long? AppointmentId, string? Error)> CreateAppointment(long scheduleSlotId,
+        public async Task<(Guid? AppointmentId, string? Error)> CreateAppointment(Guid scheduleSlotId,
             string description,
-            long masterId,
-            long serviceId,
-            string currentUserId)
+            Guid masterId,
+            Guid serviceId,
+            Guid currentUserId)
         {
             var scheduleSlot = await _masterScheduleRepository.GetMasterScheduleById(scheduleSlotId);
 
@@ -70,7 +70,7 @@ namespace Alchemy.Application.Services
             if (service == null)
                 return (null, "Service not found.");
 
-            var user = await _userManager.FindByIdAsync(currentUserId);
+            var user = await _userManager.FindByIdAsync(currentUserId.ToString());
 
             if (user == null)
                 return (null, "User not found");
@@ -102,7 +102,7 @@ namespace Alchemy.Application.Services
             return (createdId, null);
         }
 
-        public async Task<(bool Success, string? Error)> UpdateAppointment(long appointmentId, string newDescription, string currentUserId)
+        public async Task<(bool Success, string? Error)> UpdateAppointment(Guid appointmentId, string newDescription, Guid currentUserId)
         {
             var appointment = await _appointmentRepository.GetAppointmentById(appointmentId);
             
@@ -120,7 +120,7 @@ namespace Alchemy.Application.Services
             return (succes, succes ? null : "Appointment successfully updated");
         }
 
-        public async Task<(bool Success, string? Error)> CancelAppointment(long appointmentId, string currentUserId, bool isUserAdmin)
+        public async Task<(bool Success, string? Error)> CancelAppointment(Guid appointmentId, Guid currentUserId, bool isUserAdmin)
         {
             var appointment = await _appointmentRepository.GetAppointmentById(appointmentId);
 

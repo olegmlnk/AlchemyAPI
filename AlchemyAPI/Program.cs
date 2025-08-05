@@ -86,8 +86,8 @@ namespace AlchemyAPI
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
-            
-            
+
+            Console.WriteLine("Alchemy API is starting...");
 
             var app = builder.Build();
 

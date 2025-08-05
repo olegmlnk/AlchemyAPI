@@ -12,7 +12,7 @@ namespace Alchemy.Application.Services
             _masterRepository = masterRepository;
         }
 
-        public Task<Master?> GetMasterById(long id)
+        public Task<Master?> GetMasterById(Guid id)
         {
             return _masterRepository.GetMasterById(id);
         }
@@ -22,7 +22,7 @@ namespace Alchemy.Application.Services
             return _masterRepository.GetAllMasters();
         }
 
-        public async Task<(long? MasterId, string? Error)> CreateMaster(string name, string experience, string description)
+        public async Task<(Guid? MasterId, string? Error)> CreateMaster(string name, string experience, string description)
         {
             var (master, error) = Master.Create(name, experience, description);
 
@@ -33,7 +33,7 @@ namespace Alchemy.Application.Services
             return (createdId, null);
         }
 
-        public async Task<(bool Success, string? Error)> UpdateMaster(long id, string name, string experience, string description)
+        public async Task<(bool Success, string? Error)> UpdateMaster(Guid id, string name, string experience, string description)
         {
             var master = await _masterRepository.GetMasterById(id);
             if (master == null) 
@@ -48,7 +48,7 @@ namespace Alchemy.Application.Services
             return (success, success ? null : "Master hasn't been updated.");
         }
 
-        public Task<bool> DeleteMaster(long id)
+        public Task<bool> DeleteMaster(Guid id)
         {
             return _masterRepository.DeleteMaster(id);
         }

@@ -1,7 +1,8 @@
-﻿namespace AlchemyAPI.Contracts
+﻿namespace Alchemy.Domain.Contracts
 {
-    public record ServiceRequest
+    public record ServiceResponse
     (
+        Guid Id,
         string Title,
         string Description,
         double Price,

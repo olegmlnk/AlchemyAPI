@@ -6,24 +6,22 @@ namespace Alchemy.Domain.Models
     {
         public const int MAX_NAME_LENGTH = 50;
         
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         
         public string? RefreshToken { get; set; }
+        
         public DateTime? RefreshTokenExpiresAtUtc { get; set; }
 
         private readonly List<Appointment> _appointment = new List<Appointment>();
         public IReadOnlyList<Appointment> Appointments => _appointment.AsReadOnly();
         
 
-        public static (User? User, string? Error) Create(string userName, string email, string firstName,
+        public static (User? User, string? Error) Create(string email, string firstName,
             string lastName)
         {
             var errors = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(userName))
-                errors.Add("UserName cannot be empty.");
-
+            
             if (string.IsNullOrWhiteSpace(email))
                 errors.Add("Email cannot be empty.");
 
@@ -35,7 +33,7 @@ namespace Alchemy.Domain.Models
             if (string.IsNullOrWhiteSpace(lastName))
                 errors.Add("Last name cannot be empty.");
             else if (lastName.Length > MAX_NAME_LENGTH)
-                errors.Add($"Last name cannot be longer than {MAX_NAME_LENGTH} symbols.");
+                errors.Add($"Last name cannot be Guider than {MAX_NAME_LENGTH} symbols.");
 
             if (errors.Any())
                 return (null, string.Join("; ", errors));
@@ -62,7 +60,7 @@ namespace Alchemy.Domain.Models
             if (string.IsNullOrWhiteSpace(lastName))
                 errors.Add("Last name cannot be empty.");
             else if (lastName.Length > MAX_NAME_LENGTH)
-                errors.Add($"Last name cannot be longer than {MAX_NAME_LENGTH} symbols.");
+                errors.Add($"Last name cannot be Guider than {MAX_NAME_LENGTH} symbols.");
 
             if (errors.Any())
                 return (false, string.Join("; ", errors));

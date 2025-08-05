@@ -1,6 +1,6 @@
 ﻿using Alchemy.Domain.Models;
 
-namespace AlchemyAPI.Contracts
+namespace Alchemy.Domain.Contracts
 {
     public record MasterRequest
     (
